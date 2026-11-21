@@ -1,0 +1,158 @@
+{{- define "main" }}
+{{- $toc := string .TableOfContents }}
+{{- $tocCount := len (findRE "<li" $toc) }}
+{{- $showToc := and (.Param "ShowToc") (gt $tocCount 0) }}
+<article class="post-single{{ if $showToc }} has-toc{{ end }}">
+    <div class="post-column">
+        <header class="post-header">
+            {{ partial "breadcrumbs.html" . }}
+            {{- if not .Date.IsZero }}
+            <div class="post-kicker">
+                {{- with .GetTerms "categories" }}{{ with index . 0 }}
+                <a class="kicker-cat" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                <span class="kicker-sep" aria-hidden="true">/</span>
+                {{- end }}{{ end }}
+                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                {{- if .Param "ShowReadingTime" }}
+                <span class="kicker-sep" aria-hidden="true">/</span>
+                <span>{{ .ReadingTime }} 分钟</span>
+                {{- end }}
+                {{- if .Param "ShowWordCount" }}
+                <span class="kicker-sep" aria-hidden="true">/</span>
+                <span>{{ .WordCount }} 字</span>
+                {{- end }}
+                {{- if .Lastmod.After .Date }}
+                <span class="kicker-sep" aria-hidden="true">/</span>
+                <span>改于 {{ .Lastmod.Format "2006-01-02" }}</span>
+                {{- end }}
+            </div>
+            {{- end }}
+            <h1 class="post-title">{{ .Title }}</h1>
+            {{- if and (eq .Section "posts") .Params.summary }}
+            <p class="post-deck">{{ .Params.summary }}</p>
+            {{- end }}
+        </header>
+
+        {{- if $showToc }}
+        <details class="toc-mobile"{{ if .Param "TocOpen" }} open{{ end }}>
+            <summary>
+                <span class="toc-mobile-label">目录</span>
+                <span class="toc-mobile-count">{{ $tocCount }} 节</span>
+                <svg class="toc-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </summary>
+            <div class="toc-inner">{{ $toc | safeHTML }}</div>
+        </details>
+        {{- end }}
+
+        {{- if .Content }}
+        <div class="post-content md-content" id="main-content">
+            {{- partial "anchored_headings.html" .Content }}
+        </div>
+        {{- end }}
+
+        {{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}
+        {{- $hasNav := and (gt (len $pages) 1) (in $pages .) }}
+        {{- $tags := .GetTerms "tags" }}
+        {{- if or $tags $hasNav }}
+        <footer class="post-footer">
+            {{- with $tags }}
+            <div class="post-tags-block">
+                <p class="mono-label">标签</p>
+                {{ partial "tag-chips.html" $ }}
+            </div>
+            {{- end }}
+
+            {{- if $hasNav }}
+            <nav class="post-nav" aria-label="相邻文章">
+                {{- with $pages.Next . }}
+                <a class="post-nav-link post-nav-link--prev" href="{{ .RelPermalink }}">
+                    <span class="post-nav-label">← 上一篇</span>
+                    <span class="post-nav-title">{{ .Title }}</span>
+                </a>
+                {{- end }}
+                {{- with $pages.Prev . }}
+                <a class="post-nav-link post-nav-link--next" href="{{ .RelPermalink }}">
+                    <span class="post-nav-label">下一篇 →</span>
+                    <span class="post-nav-title">{{ .Title }}</span>
+                </a>
+                {{- end }}
+            </nav>
+            {{- end }}
+        </footer>
+        {{- end }}
+    </div>
+
+    {{- if $showToc }}
+    <aside class="post-rail" aria-label="文章目录">
+        <div class="rail-inner">
+            <p class="rail-head"><span>目录</span><span class="rail-en">CONTENTS</span></p>
+            {{ replaceRE `<nav id="TableOfContents">` `<nav>` $toc | safeHTML }}
+            <a class="rail-top" href="#top">回到顶部 <span aria-hidden="true">↑</span></a>
+        </div>
+    </aside>
+    {{- end }}
+</article>
+
+{{- if $showToc }}
+<script>
+(() => {
+    const links = Array.from(document.querySelectorAll('.toc-mobile a[href^="#"], .post-rail nav a[href^="#"]'));
+    if (!links.length) return;
+
+    const groups = new Map();
+    const headings = [];
+    for (const link of links) {
+        const id = decodeURIComponent(link.hash.slice(1));
+        const heading = document.getElementById(id);
+        if (!heading) continue;
+        if (!groups.has(id)) groups.set(id, []);
+        groups.get(id).push(link);
+        if (!headings.includes(heading)) headings.push(heading);
+    }
+    if (!headings.length) return;
+
+    let active = null;
+    const setActive = (heading) => {
+        if (heading === active) return;
+        active = heading;
+        for (const link of links) {
+            link.classList.remove('is-current');
+            link.removeAttribute('aria-current');
+        }
+        for (const link of groups.get(heading.id) || []) {
+            link.classList.add('is-current');
+            link.setAttribute('aria-current', 'location');
+        }
+    };
+
+    let ticking = false;
+    const update = () => {
+        ticking = false;
+        const marker = 96;
+        let current = headings[0];
+        for (const heading of headings) {
+            if (heading.getBoundingClientRect().top <= marker) current = heading;
+            else break;
+        }
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+            current = headings[headings.length - 1];
+        }
+        setActive(current);
+    };
+
+    const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(update);
+})();
+</script>
+{{- end }}
+{{- end }}{{/* end main */}}

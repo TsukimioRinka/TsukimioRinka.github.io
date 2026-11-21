@@ -4,6 +4,7 @@ theme: "PaperMod"
 
 defaultContentLanguage: "zh"
 locale: "zh-CN"
+titleCaseStyle: "none"
 enableRobotsTXT: true
 disableKinds: ["RSS"]
 enableEmoji: true
@@ -23,6 +24,7 @@ params:
   env: production
   description: "随手记一些踩坑和想法。"
   author: "body"
+  mainSections: ["posts"]
   DateFormat: "2006-01-02"
   defaultTheme: auto
   disableThemeToggle: false
@@ -33,15 +35,20 @@ params:
   ShowPostNavLinks: true
   ShowBreadCrumbs: true
   ShowCodeCopyButtons: true
-  ShowToc: false
+  ShowToc: true
   TocOpen: false
   UseHugoToc: true
   hideSummary: false
   comments: false
 
   homeInfoParams:
-    Title: "Hi 👋"
+    Title: "技术备忘簿"
+    headline: "随手记一些<br>踩坑和想法。"
     Content: "这里是我的备忘簿：写点技术笔记、踩过的坑，以及暂时想明白的事。"
+
+  assets:
+    theme_color: "#14120e"
+    msapplication_TileColor: "#14120e"
 
   socialIcons:
     - name: github

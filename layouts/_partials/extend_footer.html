@@ -1,0 +1,21 @@
+{{- /* Wrap wide tables in a keyboard-scrollable region without breaking table semantics. */ -}}
+<script>
+(() => {
+    for (const block of document.querySelectorAll('.md-content .highlight')) {
+        const code = block.querySelector('code[data-lang]');
+        if (code) block.dataset.lang = code.dataset.lang;
+    }
+
+    for (const table of document.querySelectorAll('.md-content table')) {
+        const parent = table.parentElement;
+        if (!parent || parent.classList.contains('table-scroll')) continue;
+        const wrap = document.createElement('div');
+        wrap.className = 'table-scroll';
+        wrap.tabIndex = 0;
+        wrap.setAttribute('role', 'region');
+        wrap.setAttribute('aria-label', '表格，可横向滚动');
+        table.before(wrap);
+        wrap.appendChild(table);
+    }
+})();
+</script>

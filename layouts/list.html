@@ -1,0 +1,147 @@
+{{- define "main" }}
+{{- $all := where site.RegularPages "Type" "in" site.Params.mainSections }}
+
+{{- if .IsHome }}
+{{- $pinned := where $all "Params.pin" true }}
+{{- $rest := where $all "Params.pin" "!=" true }}
+{{- $paginator := .Paginate $rest }}
+<div class="page-wrap home-wrap">
+    {{- if eq $paginator.PageNumber 1 }}
+    <section class="masthead" aria-labelledby="masthead-title">
+        <div class="masthead-top">
+            <span class="masthead-kicker"><span class="accent-square" aria-hidden="true"></span>技术备忘簿</span>
+            <span class="masthead-kicker masthead-kicker--en">MEMORANDA · {{ now.Year }}</span>
+        </div>
+        <div class="masthead-main">
+            <figure class="masthead-avatar">
+                <img src="{{ "avatar.png" | relURL }}" width="96" height="96" alt="body 的头像" decoding="async">
+                <figcaption>body</figcaption>
+            </figure>
+            <div class="masthead-copy">
+                <h1 class="masthead-title" id="masthead-title">
+                    {{- with site.Params.homeInfoParams.headline }}{{ . | safeHTML }}{{ else }}{{ site.Params.description }}{{ end -}}
+                </h1>
+                {{- with site.Params.homeInfoParams.Content }}
+                <p class="masthead-lede">{{ . }}</p>
+                {{- end }}
+            </div>
+        </div>
+        <div class="masthead-foot">
+            {{- range where site.Params.socialIcons "name" "github" }}
+            <a class="masthead-link" href="{{ .url }}" rel="me noopener" target="_blank" aria-label="GitHub（新窗口打开）">GitHub
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg>
+            </a>
+            {{- end }}
+            <a class="masthead-link" href="{{ "/about/" | relLangURL }}">关于本站</a>
+            <span class="masthead-stat">{{ len $all }} 篇文章 · {{ len site.Taxonomies.tags }} 个标签</span>
+        </div>
+    </section>
+    {{- else }}
+    <header class="paged-head">
+        <a class="mono-label" href="{{ "" | relLangURL }}">body。</a>
+        <h1>文章索引 · 第 {{ $paginator.PageNumber }} 页</h1>
+    </header>
+    {{- end }}
+
+    {{- if and $pinned (eq $paginator.PageNumber 1) }}
+    <section class="pinned-block" aria-label="置顶文章">
+        <div class="section-head">
+            <span class="section-title">置顶</span>
+            <span class="section-note">PINNED · {{ len $pinned }}</span>
+        </div>
+        {{- range $pinned }}
+        <article class="feature">
+            <div class="feature-meta">
+                {{- with .GetTerms "categories" }}{{ with index . 0 }}
+                <a class="kicker-cat" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                <span class="meta-dot" aria-hidden="true">/</span>
+                {{- end }}{{ end }}
+                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                <span class="meta-dot" aria-hidden="true">/</span>
+                <span>{{ .ReadingTime }} 分钟</span>
+                <span class="meta-dot" aria-hidden="true">/</span>
+                <span>{{ .WordCount }} 字</span>
+            </div>
+            <h2 class="feature-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            {{- with .Summary }}
+            <p class="feature-summary">{{ . | plainify | htmlUnescape }}</p>
+            {{- end }}
+            <div class="feature-foot">
+                {{- partial "tag-chips.html" . }}
+                <a class="read-link" href="{{ .RelPermalink }}">阅读 <span aria-hidden="true">→</span></a>
+            </div>
+        </article>
+        {{- end }}
+    </section>
+    {{- end }}
+
+    {{- if $paginator.Pages }}
+    <section class="index-block" aria-label="文章索引">
+        <div class="section-head">
+            <span class="section-title">索引</span>
+            <span class="section-note">INDEX · {{ len $rest }} 篇</span>
+        </div>
+        {{- $offset := mul (sub $paginator.PageNumber 1) $paginator.PagerSize }}
+        {{ partial "post-index.html" (dict "pages" $paginator.Pages "start" (add $offset 1)) }}
+    </section>
+    {{- end }}
+
+    {{- if and (eq $paginator.PageNumber 1) (eq (len $rest) 0) (gt (len $pinned) 0) }}
+    <nav class="home-links" aria-label="继续浏览">
+        <a href="{{ "/archives/" | relLangURL }}"><span>按时间翻</span><span class="home-link-arrow" aria-hidden="true">→</span></a>
+        <a href="{{ "/tags/" | relLangURL }}"><span>按标签找</span><span class="home-link-arrow" aria-hidden="true">→</span></a>
+    </nav>
+    {{- end }}
+
+    {{- if eq (len $all) 0 }}
+    <div class="empty-state">
+        <p class="mono-label">EMPTY</p>
+        <p>还没有文章。这里会慢慢长出来。</p>
+    </div>
+    {{- end }}
+
+    {{ partial "pager.html" $paginator }}
+</div>
+
+{{- else }}
+{{- $isTerm := eq .Kind "term" }}
+{{- $plural := "" }}{{ with .Data }}{{ $plural = .Plural }}{{ end }}
+{{- $isTags := eq $plural "tags" }}
+{{- $pages := .RegularPages }}{{ if $isTerm }}{{ $pages = .Pages }}{{ end }}
+{{- $paginator := .Paginate $pages }}
+<div class="page-wrap list-wrap">
+    <header class="section-masthead">
+        {{ partial "breadcrumbs.html" . }}
+        <p class="eyebrow">
+            {{- if $isTerm }}{{ if $isTags }}TAG{{ else }}CATEGORY{{ end }}{{ else }}SECTION{{ end }} ·
+            {{ len $pages }} 篇
+        </p>
+        <h1 class="section-title-main">{{ if and $isTerm $isTags }}<span class="heading-hash" aria-hidden="true">#</span>{{ end }}{{ .Title }}</h1>
+        <p class="section-lede">
+            {{- if $isTerm }}
+            共 {{ len $pages }} 篇文章{{ if $isTags }}，都标记了这个标签{{ end }}。
+            {{- else }}
+            {{ .Description | default (printf "共 %d 篇文章，按时间倒序。" (len $pages)) }}
+            {{- end }}
+        </p>
+        {{- if $isTerm }}
+        <p class="term-back"><a href="{{ (printf "/%s/" $plural) | relLangURL }}">← 全部{{ if $isTags }}标签{{ else }}分类{{ end }}</a></p>
+        {{- end }}
+    </header>
+
+    {{- if $paginator.Pages }}
+        {{- $offset := mul (sub $paginator.PageNumber 1) $paginator.PagerSize }}
+        {{ partial "post-index.html" (dict "pages" $paginator.Pages "start" (add $offset 1)) }}
+    {{- else }}
+    <div class="empty-state">
+        <p class="mono-label">EMPTY</p>
+        <p>这里还没有文章。</p>
+    </div>
+    {{- end }}
+
+    {{ partial "pager.html" $paginator }}
+</div>
+{{- end }}
+{{- end }}{{/* end main */}}

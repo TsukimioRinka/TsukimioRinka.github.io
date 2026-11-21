@@ -2,6 +2,7 @@
 title: "用 Hugo 和 GitHub Pages 搭这个站"
 date: 2026-11-21T10:00:00+08:00
 draft: false
+pin: true
 tags: ["hugo", "github-pages", "ci"]
 categories: ["折腾"]
 summary: "为什么选 Hugo，Cloudflare Pages 之外的免费托管，以及 Actions 部署 Pages 时踩到的几个坑。"

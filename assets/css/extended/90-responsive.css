@@ -1,0 +1,371 @@
+/* ==========================================================================
+   Responsive — 390px is the reference mobile width
+   ========================================================================== */
+
+@media (max-width: 1099px) {
+    .post-rail {
+        display: none;
+    }
+
+    .post-single {
+        display: block;
+        max-width: var(--measure);
+        margin-inline: auto;
+    }
+}
+
+@media (max-width: 819px) {
+    :root {
+        --header-h: 105px;
+    }
+
+    .brand {
+        font-size: 1.55rem;
+    }
+}
+
+@media (max-width: 700px) {
+    :root {
+        --codebar: 2.75rem;
+    }
+
+    .page-wrap {
+        padding-top: 2.4rem;
+        padding-bottom: 4rem;
+    }
+
+    .breadcrumbs {
+        font-size: 0.7rem;
+    }
+
+    .post-kicker {
+        font-size: 0.71rem;
+    }
+
+    .feature-meta,
+    .index-meta {
+        font-size: 0.71rem;
+    }
+
+    .footer {
+        font-size: 0.7rem;
+    }
+
+    .footer a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding-inline: 0.35rem;
+    }
+
+    .kicker-cat,
+    .index-cat {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        padding: 0.8rem 0.25rem;
+        margin: -0.8rem -0.25rem;
+    }
+
+    .archive-meta {
+        font-size: 0.67rem;
+    }
+
+    .index-title a {
+        padding-block: 0.45rem;
+    }
+
+    .archive-entry-title a {
+        display: inline-block;
+        padding-block: 0.55rem;
+    }
+
+    .masthead-main {
+        display: block;
+        padding: 1.8rem 0 1.9rem;
+    }
+
+    .masthead-avatar {
+        width: 68px;
+        margin-bottom: 1.3rem;
+    }
+
+    .masthead-avatar img {
+        width: 68px;
+        height: 68px;
+    }
+
+    .masthead-avatar figcaption {
+        margin-top: 0.4rem;
+        font-size: 0.6rem;
+        text-align: left;
+    }
+
+    .masthead-title {
+        max-width: none;
+        margin-bottom: 0.85rem;
+        font-size: clamp(2rem, 9vw, 2.6rem);
+        line-height: 1.26;
+    }
+
+    .masthead-lede {
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+
+    .masthead-kicker--en {
+        display: none;
+    }
+
+    .masthead-stat {
+        width: 100%;
+        margin-top: 0.15rem;
+        margin-left: 0;
+    }
+
+    .masthead-foot {
+        gap: 0.1rem 1.2rem;
+    }
+
+    .feature-title {
+        font-size: clamp(1.75rem, 7.6vw, 2.05rem);
+    }
+
+    .feature-summary {
+        font-size: 0.95rem;
+    }
+
+    .feature-foot {
+        gap: 0.65rem 1rem;
+    }
+
+    .index-row {
+        grid-template-columns: 2.1rem minmax(0, 1fr);
+        gap: 0 0.7rem;
+    }
+
+    .index-title {
+        font-size: 1.35rem;
+        line-height: 1.45;
+    }
+
+    .index-summary {
+        font-size: 0.92rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .tag-chip {
+        min-height: 44px;
+        padding: 0 0.7rem;
+        font-size: 0.72rem;
+    }
+
+    .tag-row {
+        gap: 0.5rem;
+    }
+
+    .read-link {
+        margin-left: 0;
+    }
+
+    .breadcrumbs a {
+        min-height: 44px;
+    }
+
+    .section-masthead {
+        padding-bottom: 1.4rem;
+    }
+
+    .section-title-main {
+        font-size: clamp(2.35rem, 10vw, 3rem);
+    }
+
+    .post-single {
+        padding-top: 1.9rem;
+    }
+
+    .post-title {
+        font-size: clamp(2rem, 8.6vw, 2.55rem);
+        line-height: 1.28;
+    }
+
+    .post-deck {
+        padding-left: 0.8rem;
+        font-size: 0.98rem;
+    }
+
+    .md-content {
+        font-size: 1.0625rem;
+        line-height: 1.8;
+    }
+
+    .md-content p {
+        margin-bottom: 1.1em;
+    }
+
+    .md-content h2 {
+        margin-top: 2.5em;
+        font-size: 1.42rem;
+        line-height: 1.5;
+    }
+
+    .md-content h3 {
+        font-size: 1.16rem;
+    }
+
+    .md-content h4 {
+        font-size: 1.03rem;
+    }
+
+    .md-content blockquote {
+        padding: 0.95em 1.05em;
+        font-size: 1rem;
+    }
+
+    .md-content .highlight pre code,
+    .md-content pre code {
+        padding: 0.95rem 1rem;
+        font-size: 0.86rem;
+    }
+
+    .md-content table {
+        font-size: 0.88em;
+    }
+
+    .md-content table th,
+    .md-content table td {
+        padding: 0.6em 0.65em;
+    }
+
+    .post-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .post-nav-link--next {
+        align-items: flex-start;
+        padding-left: 0;
+        text-align: left;
+        border-top: 1px solid var(--rule);
+        border-left: 0;
+    }
+
+    .archive-month {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+        padding-top: 1.3rem;
+    }
+
+    .month-label {
+        padding-top: 0;
+    }
+
+    .archive-row {
+        grid-template-columns: 2.2rem minmax(0, 1fr);
+        gap: 0.75rem;
+    }
+
+    .archive-entry-title {
+        font-size: 1.08rem;
+    }
+
+    .year-head h2 {
+        font-size: clamp(2.8rem, 16vw, 3.6rem);
+    }
+
+    .tag-ledger {
+        margin-top: 1.8rem;
+    }
+
+    .ledger-row {
+        min-height: 58px;
+        gap: 0.7rem;
+    }
+
+    .ledger-name {
+        font-size: min(var(--tag-size, 1.15rem), 1.65rem);
+    }
+
+    .searchResults li {
+        padding-right: 1.8rem;
+        font-size: 1.05rem;
+    }
+
+    .home-links a {
+        padding: 0 0.65rem;
+        font-size: 0.68rem;
+    }
+
+    .footer {
+        padding-bottom: 3rem;
+    }
+
+    .top-link {
+        right: 1rem;
+        bottom: 1rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .masthead-top {
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+    }
+
+    .accent-square {
+        margin-right: 0.45rem;
+    }
+
+    .brand {
+        font-size: 1.45rem;
+    }
+
+    .menu {
+        gap: 1.05rem;
+    }
+
+    .menu a {
+        font-size: 0.74rem;
+    }
+
+    .post-title {
+        font-size: 2rem;
+    }
+
+    .kicker-cat,
+    .post-kicker {
+        font-size: 0.7rem;
+    }
+
+    .section-note {
+        font-size: 0.62rem;
+    }
+
+    .masthead-stat {
+        font-size: 0.68rem;
+    }
+
+    .pager {
+        gap: 0.5rem;
+        font-size: 0.66rem;
+    }
+
+    .pager-link {
+        font-size: 0.66rem;
+    }
+
+    .index-num {
+        font-size: 0.66rem;
+    }
+
+    .home-links {
+        grid-template-columns: 1fr;
+    }
+
+    .home-links a + a {
+        border-top: 1px solid var(--rule);
+        border-left: 0;
+    }
+}

@@ -1,0 +1,32 @@
+{{- $start := .start | default 1 -}}
+<ol class="post-index">
+    {{- range $i, $page := .pages }}
+    {{- $n := add $start $i }}
+    <li class="index-row">
+        <span class="index-num" aria-hidden="true">{{ printf "%02d" $n }}</span>
+        <div class="index-body">
+            <div class="index-meta">
+                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                <span class="meta-dot" aria-hidden="true">/</span>
+                <span>{{ .ReadingTime }} 分钟</span>
+                <span class="meta-dot" aria-hidden="true">/</span>
+                <span>{{ .WordCount }} 字</span>
+                {{- with .GetTerms "categories" }}{{ with index . 0 }}
+                <span class="meta-dot" aria-hidden="true">/</span>
+                <a class="index-cat" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                {{- end }}{{ end }}
+            </div>
+            <h2 class="index-title">
+                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                {{- if .Params.pin }}<span class="pin-mark">置顶</span>{{ end }}
+            </h2>
+            {{- if not (.Param "hideSummary") }}{{ with .Summary }}
+            <p class="index-summary">{{ . | plainify | htmlUnescape }}</p>
+            {{- end }}{{ end }}
+            {{- with .GetTerms "tags" }}
+            <div class="index-foot">{{ partial "tag-chips.html" $page }}</div>
+            {{- end }}
+        </div>
+    </li>
+    {{- end }}
+</ol>

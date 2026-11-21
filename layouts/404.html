@@ -1,0 +1,12 @@
+{{- define "main" }}
+<div class="page-wrap notfound-wrap">
+    <p class="eyebrow">404 · NOT FOUND</p>
+    <p class="notfound-code" aria-hidden="true">404</p>
+    <h1 class="section-title-main">这一页不在这里。</h1>
+    <p class="section-lede">链接可能旧了，或者文章还没写。回首页，或者按标签找找。</p>
+    <nav class="home-links" aria-label="继续浏览">
+        <a href="{{ "" | relLangURL }}"><span>回到首页</span><span class="home-link-arrow" aria-hidden="true">→</span></a>
+        <a href="{{ "/tags/" | relLangURL }}"><span>按标签找</span><span class="home-link-arrow" aria-hidden="true">→</span></a>
+    </nav>
+</div>
+{{- end }}{{/* end main */}}

@@ -1,0 +1,55 @@
+{{- define "main" }}
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{- $groups := $pages.GroupByPublishDate "2006" }}
+<div class="page-wrap archive-wrap">
+    <header class="section-masthead">
+        <p class="eyebrow">ARCHIVE · {{ len $pages }} 篇</p>
+        <h1 class="section-title-main">{{ .Title }}</h1>
+        <p class="section-lede">共 {{ len $pages }} 篇文章，按年份归档。</p>
+    </header>
+
+    {{- if $groups }}
+    {{- if gt (len $groups) 1 }}
+    <nav class="year-index" aria-label="年份索引">
+        {{- range $groups }}
+        <a href="#year-{{ .Key }}">{{ .Key }}<span>{{ len .Pages }}</span></a>
+        {{- end }}
+    </nav>
+    {{- end }}
+
+    {{- range $groups }}
+    <section class="archive-year" id="year-{{ .Key }}" aria-labelledby="year-head-{{ .Key }}">
+        <header class="year-head">
+            <h2 id="year-head-{{ .Key }}">
+                <a class="year-anchor" href="#year-{{ .Key }}" aria-label="{{ .Key }} 年，锚点">{{ .Key }}</a>
+            </h2>
+            <span class="year-count">{{ len .Pages }} 篇</span>
+        </header>
+
+        {{- range .Pages.GroupByDate "01" }}
+        {{- $month := int .Key }}
+        <div class="archive-month">
+            <h3 class="month-label">{{ $month }} 月</h3>
+            <ol class="archive-list">
+                {{- range .Pages }}
+                <li class="archive-row">
+                    <span class="archive-day" aria-label="{{ .Date.Format "1 月 2 日" }}">{{ .Date.Format "02" }}</span>
+                    <div class="archive-body">
+                        <h4 class="archive-entry-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h4>
+                        <span class="archive-meta">{{ .ReadingTime }} 分钟</span>
+                    </div>
+                </li>
+                {{- end }}
+            </ol>
+        </div>
+        {{- end }}
+    </section>
+    {{- end }}
+    {{- else }}
+    <div class="empty-state">
+        <p class="mono-label">EMPTY</p>
+        <p>归档还是空的。</p>
+    </div>
+    {{- end }}
+</div>
+{{- end }}{{/* end main */}}

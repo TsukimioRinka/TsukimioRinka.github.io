@@ -1,0 +1,43 @@
+{{- define "main" }}
+{{- $plural := .Data.Plural }}
+{{- $isTags := eq $plural "tags" }}
+{{- $label := cond $isTags "标签" "分类" }}
+{{- $terms := .Data.Terms.Alphabetical }}
+{{- $total := 0 }}
+{{- $max := 1 }}
+{{- range $terms }}
+{{- $total = add $total .Count }}
+{{- if gt .Count $max }}{{ $max = .Count }}{{ end }}
+{{- end }}
+{{- $denom := 1 }}{{ if gt $max 1 }}{{ $denom = sub $max 1 }}{{ end }}
+<div class="page-wrap taxonomy-wrap">
+    <header class="section-masthead">
+        <p class="eyebrow">{{ if $isTags }}INDEX OF TAGS{{ else }}INDEX OF CATEGORIES{{ end }}</p>
+        <h1 class="section-title-main">{{ $label }}</h1>
+        <p class="section-lede">{{ len $terms }} 个{{ $label }} · 共 {{ $total }} 篇。字号表示文章数量。</p>
+    </header>
+
+    {{- if $terms }}
+    <div class="tag-ledger">
+        {{- range $terms }}
+        {{- $name := .Name }}
+        {{- $count := .Count }}
+        {{- $ratio := div (float (sub $count 1)) (float $denom) }}
+        {{- $size := add 1.35 (mul 0.95 $ratio) }}
+        {{- with site.GetPage (printf "/%s/%s" $plural $name) }}
+        <a class="ledger-row" href="{{ .RelPermalink }}">
+            <span class="ledger-name" style="--tag-size: {{ printf "%.2f" $size }}rem">{{ $name }}</span>
+            <span class="ledger-rule" aria-hidden="true"></span>
+            <span class="ledger-count">{{ $count }}<span class="ledger-unit">篇</span></span>
+        </a>
+        {{- end }}
+        {{- end }}
+    </div>
+    {{- else }}
+    <div class="empty-state">
+        <p class="mono-label">EMPTY</p>
+        <p>还没有{{ $label }}。</p>
+    </div>
+    {{- end }}
+</div>
+{{- end }}{{/* end main */}}

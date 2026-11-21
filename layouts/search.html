@@ -1,0 +1,22 @@
+{{- define "main" }}
+<div class="page-wrap search-wrap">
+    <header class="section-masthead">
+        <p class="eyebrow">SEARCH · LOCAL INDEX</p>
+        <h1 class="section-title-main">{{ .Title }}</h1>
+        <p class="section-lede">检索标题、摘要与正文。索引在本地生成，不经过第三方服务。</p>
+    </header>
+
+    <div id="searchbox" class="searchbox">
+        <div class="search-field">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="searchInput" disabled placeholder="{{ .Params.placeholder | default "搜点什么…" }}"
+                aria-label="搜索文章" type="search" autocomplete="off" spellcheck="false" maxlength="64">
+        </div>
+        <p class="search-hint">输入关键词开始检索；Esc 清空。</p>
+        <ul id="searchResults" class="searchResults" aria-label="搜索结果"></ul>
+        <noscript><p class="search-noscript">搜索依赖 JavaScript，请在浏览器中启用后重试。</p></noscript>
+    </div>
+</div>
+{{- end }}{{/* end main */}}
