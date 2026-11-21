@@ -94,6 +94,27 @@
     line-height: 1.8;
 }
 
+.masthead-seal {
+    display: block;
+    width: 34px;
+    height: 34px;
+    margin: 1.05rem 0.15rem 0 auto;
+    transform: rotate(-3deg);
+}
+
+.masthead-seal rect {
+    fill: var(--accent);
+}
+
+.masthead-seal text {
+    fill: var(--paper);
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
 .masthead-foot {
     display: flex;
     flex-wrap: wrap;

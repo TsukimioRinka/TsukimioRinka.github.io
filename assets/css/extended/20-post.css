@@ -257,6 +257,17 @@
     margin-bottom: 0;
 }
 
+/* 首字下沉 — vermilion initial, one character per article */
+.md-content > p:first-child::first-letter {
+    float: left;
+    margin: 0.05em 0.16em 0 0;
+    color: var(--accent);
+    font-family: var(--serif);
+    font-size: 3.2em;
+    font-weight: 600;
+    line-height: 0.85;
+}
+
 .md-content a:not(.anchor) {
     color: var(--accent-strong);
     text-decoration: underline;
