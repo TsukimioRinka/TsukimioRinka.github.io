@@ -47,8 +47,8 @@ params:
     Content: "这里是我的备忘簿：写点技术笔记、踩过的坑，以及暂时想明白的事。"
 
   assets:
-    theme_color: "#14120e"
-    msapplication_TileColor: "#14120e"
+    theme_color: "#0a0e1c"
+    msapplication_TileColor: "#0a0e1c"
 
   socialIcons:
     - name: github

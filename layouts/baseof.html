@@ -22,6 +22,15 @@
 <body id="top">
 {{- end }}
     <a class="skip-link" href="#main">跳到正文</a>
+    <div class="sky" aria-hidden="true">
+        <div class="sky-nebula n1"></div>
+        <div class="sky-nebula n2"></div>
+        <div class="sky-stars stars-a"></div>
+        <div class="sky-stars stars-b"></div>
+        <div class="sky-stars stars-c"></div>
+        <div class="meteor meteor-a"></div>
+        <div class="meteor meteor-b"></div>
+    </div>
     {{ partialCached "header.html" . .Page -}}
     <main class="main" id="main">
         {{- block "main" . }}{{ end }}

@@ -4,9 +4,25 @@
 
 .header {
     position: relative;
-    z-index: 20;
+    z-index: 100;
     border-bottom: 1px solid var(--rule);
     background: var(--paper);
+}
+
+/* frosted glass over the starfield; solid color as fallback */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .header {
+        background: color-mix(in srgb, var(--paper) 78%, transparent);
+        backdrop-filter: blur(12px) saturate(1.25);
+        -webkit-backdrop-filter: blur(12px) saturate(1.25);
+    }
+}
+
+@media (min-width: 820px) {
+    .header {
+        position: sticky;
+        top: 0;
+    }
 }
 
 .header-nav {
