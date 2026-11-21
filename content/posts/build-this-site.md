@@ -66,11 +66,22 @@ concurrency:
 ## 写文章
 
 ```bash
-hugo new posts/标题.md     # 从 archetypes/default.md 生成骨架
-hugo server -D             # 本地预览，含草稿
+hugo new posts/my-post.md   # 从 archetypes/default.md 生成骨架
+hugo server -D              # 本地预览，含草稿
 ```
 
 推 `main` 就自动构建。
+
+**文件名必须用英文或拼音。** Hugo 不做音译，`posts/标题.md` 会直接变成 `/posts/%E6%A0%87%E9%A2%98/` 这种百分号编码的 URL。中文写在 `title` 字段里，URL 由文件名决定。实在想用中文文件名，就在 front matter 里补一个 `slug: my-post`，URL 会改用 slug。
+
+```yaml
+---
+title: "中文标题写这里"
+slug: "my-post"
+date: 2026-11-21T10:00:00+08:00
+tags: ["hugo"]
+---
+```
 
 ---
 
