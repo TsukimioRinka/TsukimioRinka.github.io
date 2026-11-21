@@ -5,6 +5,7 @@ theme: "PaperMod"
 defaultContentLanguage: "zh"
 locale: "zh-CN"
 enableRobotsTXT: true
+disableKinds: ["RSS"]
 enableEmoji: true
 buildDrafts: false
 buildFuture: false
@@ -16,7 +17,6 @@ pagination:
 outputs:
   home:
     - HTML
-    - RSS
     - JSON
 
 params:
@@ -33,7 +33,6 @@ params:
   ShowPostNavLinks: true
   ShowBreadCrumbs: true
   ShowCodeCopyButtons: true
-  ShowRssButtonInSectionTermList: true
   ShowToc: false
   TocOpen: false
   UseHugoToc: true
@@ -47,8 +46,6 @@ params:
   socialIcons:
     - name: github
       url: "https://github.com/TsukimioRinka"
-    - name: rss
-      url: "/index.xml"
 
   fuseOpts:
     isCaseSensitive: false
