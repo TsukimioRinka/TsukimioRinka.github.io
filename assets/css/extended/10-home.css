@@ -95,6 +95,116 @@
     animation: rise 0.7s var(--ease) 0.44s both;
 }
 
+/* --- star chart: every post is a star, the route links them in time ------- */
+
+.starchart {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    animation: rise 0.7s var(--ease) 0.3s both;
+}
+
+.starchart-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 0.6rem;
+}
+
+.starchart .dust {
+    fill: var(--s3);
+    opacity: 0.5;
+}
+
+.starchart .dust.d1 {
+    fill: var(--s2);
+}
+
+.starchart .dust.d2 {
+    fill: var(--s4);
+    opacity: 0.7;
+}
+
+.starchart .glow-1 {
+    stop-color: var(--accent);
+    stop-opacity: 0.5;
+}
+
+.starchart .glow-2 {
+    stop-color: var(--accent);
+    stop-opacity: 0;
+}
+
+.starchart .route {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1;
+    opacity: 0.4;
+    stroke-dasharray: 2 8;
+    animation: route-march 24s linear infinite;
+}
+
+@keyframes route-march {
+    to {
+        stroke-dashoffset: -100;
+    }
+}
+
+.post-star .hit {
+    fill: transparent;
+}
+
+.post-star .glow {
+    fill: url(#star-glow);
+    opacity: 0.75;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+    animation: glow-breathe 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow-breathe {
+    from {
+        opacity: 0.45;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 0.85;
+        transform: scale(1.12);
+    }
+}
+
+.post-star .core {
+    fill: var(--accent);
+}
+
+.post-star .star-name {
+    fill: var(--ink);
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    text-anchor: middle;
+}
+
+.post-star .star-date {
+    fill: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-anchor: middle;
+}
+
+.post-star:hover .glow,
+.post-star:focus-visible .glow {
+    animation: none;
+    opacity: 1;
+    transform: scale(1.35);
+}
+
+.post-star:hover .star-name,
+.post-star:focus-visible .star-name {
+    fill: var(--accent);
+}
+
 .masthead-kicker {
     display: inline-flex;
     align-items: center;

@@ -7,6 +7,10 @@
         display: none;
     }
 
+    .starchart {
+        display: none;
+    }
+
     .post-single {
         display: block;
         max-width: var(--measure);

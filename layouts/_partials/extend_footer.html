@@ -1,3 +1,127 @@
+{{- /* Cursor stardust: a faint star trail follows the pointer.
+     Only on precise pointers, never under reduced-motion. Colors track the theme. */ -}}
+<script>
+(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!matchMedia('(pointer: fine)').matches) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'stardust';
+    canvas.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    let dpr = 1, w = 0, h = 0;
+    const resize = () => {
+        dpr = Math.min(devicePixelRatio || 1, 2);
+        w = innerWidth; h = innerHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    addEventListener('resize', resize);
+
+    const root = document.documentElement;
+    const readPalette = () => {
+        const cs = getComputedStyle(root);
+        return ['--s1', '--s3', '--s4', '--s5', '--accent']
+            .map(k => cs.getPropertyValue(k).trim())
+            .filter(Boolean);
+    };
+    let colors = readPalette();
+    const refresh = () => { colors = readPalette(); };
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle) toggle.addEventListener('click', () => setTimeout(refresh, 80));
+    const darkQuery = matchMedia('(prefers-color-scheme: dark)');
+    if (darkQuery.addEventListener) darkQuery.addEventListener('change', refresh);
+
+    const nightMode = () => root.dataset.theme === 'dark' ||
+        (root.dataset.theme === 'auto' && darkQuery.matches);
+
+    const parts = [];
+    let raf = 0, lx = -1, ly = -1, last = 0;
+
+    const spawnOne = (x, y, dx, dy) => {
+        if (parts.length > 170) parts.splice(0, parts.length - 170);
+        parts.push({
+            x: x + (Math.random() - 0.5) * 3.5,
+            y: y + (Math.random() - 0.5) * 3.5,
+            vx: -dx * 0.02 + (Math.random() - 0.5) * 0.4,
+            vy: -dy * 0.02 + (Math.random() - 0.5) * 0.4,
+            life: 0,
+            ttl: 0.6 + Math.random() * 0.7,
+            size: 0.8 + Math.random() * 1.8,
+            color: colors[Math.random() * colors.length | 0],
+            star: Math.random() < 0.15,
+            phase: Math.random() * 6.28
+        });
+    };
+
+    /* walk the pointer segment so the trail reads as a ribbon, not dots */
+    const spawnAlong = (x0, y0, x1, y1) => {
+        const dx = x1 - x0, dy = y1 - y0;
+        const dist = Math.hypot(dx, dy);
+        const steps = Math.max(1, Math.floor(dist / 4));
+        for (let i = 1; i <= steps; i++) {
+            spawnOne(x0 + dx * i / steps, y0 + dy * i / steps, dx / steps, dy / steps);
+        }
+    };
+
+    const tick = (t) => {
+        raf = 0;
+        if (document.hidden) return;
+        const dt = Math.min(0.05, (t - last) / 1000 || 0.016);
+        last = t;
+        ctx.clearRect(0, 0, w, h);
+        ctx.globalCompositeOperation = nightMode() ? 'lighter' : 'source-over';
+        for (let i = parts.length - 1; i >= 0; i--) {
+            const p = parts[i];
+            p.life += dt;
+            if (p.life >= p.ttl) { parts.splice(i, 1); continue; }
+            p.x += p.vx; p.y += p.vy;
+            p.vy += 0.005;
+            const k = 1 - p.life / p.ttl;
+            const a = k * 0.8 * (0.72 + 0.28 * Math.sin(p.life * 18 + p.phase));
+            ctx.globalAlpha = Math.max(0, a);
+            ctx.fillStyle = p.color;
+            if (p.star) {
+                const s = p.size * 2.2;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y - s); ctx.lineTo(p.x + s * 0.28, p.y - s * 0.28);
+                ctx.lineTo(p.x + s, p.y); ctx.lineTo(p.x + s * 0.28, p.y + s * 0.28);
+                ctx.lineTo(p.x, p.y + s); ctx.lineTo(p.x - s * 0.28, p.y + s * 0.28);
+                ctx.lineTo(p.x - s, p.y); ctx.lineTo(p.x - s * 0.28, p.y - s * 0.28);
+                ctx.closePath(); ctx.fill();
+            } else {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, 6.2832);
+                ctx.fill();
+            }
+        }
+        ctx.globalAlpha = 1;
+        if (parts.length) raf = requestAnimationFrame(tick);
+    };
+
+    addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        if (lx >= 0) {
+            const dx = e.clientX - lx, dy = e.clientY - ly;
+            if (Math.abs(dx) + Math.abs(dy) > 3) spawnAlong(lx, ly, e.clientX, e.clientY);
+        }
+        lx = e.clientX; ly = e.clientY;
+        if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
+    }, { passive: true });
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && parts.length && !raf) {
+            last = performance.now();
+            raf = requestAnimationFrame(tick);
+        }
+    });
+})();
+</script>
+
 {{- /* Wrap wide tables in a keyboard-scrollable region without breaking table semantics. */ -}}
 <script>
 (() => {

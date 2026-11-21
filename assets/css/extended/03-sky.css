@@ -282,51 +282,82 @@
     }
 }
 
-/* --- meteors: short streak crossing the upper sky, then a long pause ----- */
+/* --- meteors: long glowing streaks on three orbits ----------------------- */
 
 .meteor {
     position: absolute;
-    height: 1.5px;
+    height: 2px;
     border-radius: 2px;
     background: var(--meteor-grad);
     opacity: 0;
-    transform: rotate(-32deg);
+    transform: rotate(var(--ma, -32deg));
     animation: meteor-fly 10s linear infinite;
 }
 
+.meteor::after {
+    content: "";
+    position: absolute;
+    top: -1.4px;
+    left: -1px;
+    width: 4.5px;
+    height: 4.5px;
+    border-radius: 50%;
+    background: var(--meteor-head);
+    box-shadow: 0 0 12px 2px var(--meteor-head);
+}
+
 .meteor-a {
-    top: 11%;
+    top: 10%;
     left: 82%;
-    width: 150px;
+    width: 220px;
+    animation-duration: 9s;
 }
 
 .meteor-b {
-    top: 27%;
+    top: 25%;
     left: 96%;
-    width: 100px;
-    animation-duration: 15s;
-    animation-delay: 6.5s;
+    width: 140px;
+    animation-duration: 14s;
+    animation-delay: 5s;
+}
+
+.meteor-c {
+    --ma: -38deg;
+    top: 5%;
+    left: 60%;
+    width: 180px;
+    animation-duration: 19s;
+    animation-delay: 11s;
 }
 
 @keyframes meteor-fly {
     0% {
-        transform: rotate(-32deg) translateX(6vw);
+        transform: rotate(var(--ma, -32deg)) translateX(6vw);
         opacity: 0;
     }
 
     2% {
-        opacity: 0.95;
+        opacity: 1;
     }
 
-    13% {
-        transform: rotate(-32deg) translateX(-78vw);
+    14% {
+        transform: rotate(var(--ma, -32deg)) translateX(-82vw);
         opacity: 0;
     }
 
     100% {
-        transform: rotate(-32deg) translateX(-78vw);
+        transform: rotate(var(--ma, -32deg)) translateX(-82vw);
         opacity: 0;
     }
+}
+
+/* --- cursor stardust canvas (JS-driven, pointer:fine only) ---------------- */
+
+.stardust {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

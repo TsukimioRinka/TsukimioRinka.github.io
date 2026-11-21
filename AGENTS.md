@@ -20,6 +20,8 @@
 - 严禁引入 React / Vue / Webpack / Vite / Tailwind / PostCSS / npm 构建链。
 - 零外部运行时资源：不许 Google Fonts / jsDelivr / unpkg / 任何 CDN / 外链图片。
   字体只用系统字体栈（`--serif` / `--sans` / `--mono`），图标用内联 SVG。
+- 交互增强只允许小型内联原生 JS（如 extend_footer 里的星尘轨迹），
+  必须 `prefers-reduced-motion` 与 `pointer: coarse` 兜底，不得阻塞渲染。
 
 ## 3. Go Template 语法检查
 

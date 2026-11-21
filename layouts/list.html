@@ -53,6 +53,54 @@
             <span class="masthead-stat">{{ len $all }} 篇文章 · {{ len site.Taxonomies.tags }} 个标签</span>
         </div>
     </section>
+
+    {{- $starred := $all.ByDate }}
+    {{- if $starred }}
+    <section class="starchart" aria-label="星图">
+        <div class="section-head">
+            <span class="section-title">星图</span>
+            <span class="section-note">STAR CHART · {{ len $starred }} 颗星在轨</span>
+        </div>
+        <svg class="starchart-map" viewBox="0 0 1000 560" role="img"
+            aria-label="每篇文章都是一颗星，共 {{ len $starred }} 颗；虚线是沿时间的航线">
+            <defs>
+                <radialGradient id="star-glow">
+                    <stop class="glow-1" offset="0"></stop>
+                    <stop class="glow-2" offset="1"></stop>
+                </radialGradient>
+            </defs>
+            {{- range $i := seq 46 }}
+            <circle class="dust d{{ mod $i 3 }}" cx="{{ mod (mul $i 7919) 1000 }}" cy="{{ mod (mul $i 104729) 560 }}"
+                r="{{ printf "%.1f" (add 0.7 (mul (mod $i 3) 0.5)) }}"></circle>
+            {{- end }}
+            {{- /* golden-angle spiral: the n-th post sits at r=42√n, θ=n·137.5° */ -}}
+            {{- $pts := slice }}
+            {{- range $i, $p := $starred }}
+            {{- $n := add $i 1 }}
+            {{- $r := mul 42.0 (math.Sqrt $n) }}
+            {{- $cx := math.Max 95 (math.Min 905 (add 500 (mul $r (math.Cos (mul $n 2.39996)) 1.3))) }}
+            {{- $cy := math.Max 60 (math.Min 500 (add 280 (mul $r (math.Sin (mul $n 2.39996)) 0.82))) }}
+            {{- $pts = $pts | append (printf "%.0f,%.0f" $cx $cy) }}
+            {{- end }}
+            {{- if gt (len $starred) 1 }}
+            <polyline class="route" points="{{ delimit $pts " " }}"></polyline>
+            {{- end }}
+            {{- range $i, $p := $starred }}
+            {{- $n := add $i 1 }}
+            {{- $r := mul 42.0 (math.Sqrt $n) }}
+            {{- $cx := math.Max 95 (math.Min 905 (add 500 (mul $r (math.Cos (mul $n 2.39996)) 1.3))) }}
+            {{- $cy := math.Max 60 (math.Min 500 (add 280 (mul $r (math.Sin (mul $n 2.39996)) 0.82))) }}
+            <a class="post-star" href="{{ $p.RelPermalink }}" aria-label="{{ $p.Title }}">
+                <circle class="hit" cx="{{ printf "%.1f" $cx }}" cy="{{ printf "%.1f" $cy }}" r="24"></circle>
+                <circle class="glow" cx="{{ printf "%.1f" $cx }}" cy="{{ printf "%.1f" $cy }}" r="18"></circle>
+                <circle class="core" cx="{{ printf "%.1f" $cx }}" cy="{{ printf "%.1f" $cy }}" r="3.4"></circle>
+                <text class="star-name" x="{{ printf "%.1f" $cx }}" y="{{ printf "%.1f" (sub $cy 17) }}">{{ $p.Title }}</text>
+                <text class="star-date" x="{{ printf "%.1f" $cx }}" y="{{ printf "%.1f" (add $cy 27) }}">{{ $p.Date.Format "2006-01-02" }}</text>
+            </a>
+            {{- end }}
+        </svg>
+    </section>
+    {{- end }}
     {{- else }}
     <header class="paged-head">
         <a class="mono-label" href="{{ "" | relLangURL }}">body。</a>
