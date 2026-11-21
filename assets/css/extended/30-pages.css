@@ -28,7 +28,7 @@
 
 .year-index a span {
     color: var(--accent);
-    font-size: 0.62rem;
+    font-size: 0.7rem;
 }
 
 .year-index a:hover {
@@ -95,7 +95,7 @@
 .month-label span {
     margin-left: 0.3rem;
     color: var(--faint);
-    font-size: 0.62rem;
+    font-size: 0.7rem;
 }
 
 .archive-list {
@@ -144,7 +144,7 @@
 .archive-meta {
     color: var(--muted);
     font-family: var(--mono);
-    font-size: 0.64rem;
+    font-size: 0.7rem;
     letter-spacing: 0.03em;
 }
 
@@ -197,7 +197,7 @@
 .ledger-unit {
     margin-left: 0.18rem;
     color: var(--muted);
-    font-size: 0.58rem;
+    font-size: 0.7rem;
 }
 
 .ledger-row:hover .ledger-name {

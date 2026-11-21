@@ -91,7 +91,7 @@
     margin-left: auto;
     color: var(--muted);
     font-family: var(--mono);
-    font-size: 0.63rem;
+    font-size: 0.7rem;
     letter-spacing: 0.04em;
 }
 
@@ -173,7 +173,7 @@
 
 .rail-en {
     color: var(--faint);
-    font-size: 0.58rem;
+    font-size: 0.7rem;
     letter-spacing: 0.12em;
 }
 
@@ -218,7 +218,7 @@
     padding-top: 0.9rem;
     color: var(--muted);
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     letter-spacing: 0.04em;
     text-decoration: none;
     border-top: 1px solid var(--rule);
@@ -493,7 +493,7 @@
     height: var(--codebar);
     color: var(--code-block-text);
     font-family: var(--mono);
-    font-size: 0.58rem;
+    font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     opacity: 0.55;
@@ -547,7 +547,7 @@
     padding: 0 0.85rem;
     color: var(--code-block-text);
     font-family: var(--mono);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     letter-spacing: 0.06em;
     background: transparent;
     border: 0;
@@ -668,7 +668,7 @@
 .post-nav-label {
     color: var(--muted);
     font-family: var(--mono);
-    font-size: 0.64rem;
+    font-size: 0.7rem;
     letter-spacing: 0.08em;
 }
 

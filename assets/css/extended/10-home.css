@@ -108,6 +108,7 @@
     align-items: center;
     gap: 0.35rem;
     min-height: 44px;
+    min-width: 44px;
     color: var(--text-soft);
     font-family: var(--mono);
     font-size: 0.7rem;
@@ -249,6 +250,7 @@
     align-items: center;
     gap: 0.45rem;
     min-height: 44px;
+    min-width: 44px;
     margin-left: auto;
     color: var(--text-soft);
     font-family: var(--mono);
@@ -441,6 +443,7 @@
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    min-width: 44px;
     color: var(--text-soft);
     border-bottom: 1px solid transparent;
 }
