@@ -14,6 +14,11 @@
 
 .post-header {
     margin: 0 0 2.2rem;
+    animation: rise 0.65s var(--ease) both;
+}
+
+.post-content {
+    animation: rise 0.65s var(--ease) 0.12s both;
 }
 
 .post-kicker {

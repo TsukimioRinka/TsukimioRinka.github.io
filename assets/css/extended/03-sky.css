@@ -9,25 +9,14 @@
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.8s var(--ease);
 }
 
-:root[data-theme="dark"] .sky {
-    opacity: 1;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root[data-theme="auto"] .sky {
-        opacity: 1;
-    }
-}
-
-/* --- nebulae: two soft glows, indigo upper right, violet lower left ------ */
+/* --- nebulae: two soft glows, drifting slowly ----------------------------- */
 
 .sky-nebula {
     position: absolute;
     border-radius: 50%;
+    will-change: transform;
 }
 
 .sky-nebula.n1 {
@@ -35,7 +24,8 @@
     right: -12%;
     width: 52vw;
     height: 52vw;
-    background: radial-gradient(circle, rgba(88, 116, 200, 0.15) 0%, rgba(88, 116, 200, 0.05) 42%, transparent 70%);
+    background: radial-gradient(circle, var(--neb1) 0%, transparent 70%);
+    animation: neb-drift-a 38s ease-in-out infinite alternate;
 }
 
 .sky-nebula.n2 {
@@ -43,7 +33,28 @@
     left: -14%;
     width: 58vw;
     height: 58vw;
-    background: radial-gradient(circle, rgba(146, 96, 190, 0.1) 0%, rgba(146, 96, 190, 0.04) 45%, transparent 70%);
+    background: radial-gradient(circle, var(--neb2) 0%, transparent 70%);
+    animation: neb-drift-b 52s ease-in-out infinite alternate;
+}
+
+@keyframes neb-drift-a {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(-7vw, 5vh) scale(1.1);
+    }
+}
+
+@keyframes neb-drift-b {
+    from {
+        transform: translate(0, 0) scale(1.06);
+    }
+
+    to {
+        transform: translate(6vw, -4vh) scale(1);
+    }
 }
 
 /* --- star layers: each div is one star-shaped pixel, shadows are the rest */
@@ -62,106 +73,106 @@
     height: 1px;
     animation-duration: 4.5s;
     box-shadow:
-        97.07vw 50.49vh rgba(235, 240, 255, 0.65),
-        66.66vw 4.08vh rgba(235, 240, 255, 0.65),
-        80.11vw 17.46vh rgba(235, 240, 255, 0.65),
-        49.23vw 63.01vh rgba(235, 240, 255, 0.9),
-        52.8vw 93.6vh rgba(210, 224, 255, 0.8),
-        51.73vw 90.28vh rgba(235, 240, 255, 0.9),
-        86.27vw 39.23vh rgba(235, 240, 255, 0.65),
-        37.03vw 69.02vh rgba(235, 240, 255, 0.65),
-        22.72vw 63.22vh rgba(235, 240, 255, 0.9),
-        22.2vw 49.61vh rgba(235, 240, 255, 0.9),
-        60.58vw 26.49vh rgba(235, 240, 255, 0.9),
-        45.03vw 34.59vh rgba(235, 240, 255, 0.9),
-        55.29vw 75.74vh rgba(255, 244, 214, 0.85),
-        26.71vw 53.77vh rgba(235, 240, 255, 0.9),
-        42.51vw 57.38vh rgba(235, 240, 255, 0.9),
-        8.7vw 85.02vh rgba(235, 240, 255, 0.9),
-        13.75vw 45.88vh rgba(235, 240, 255, 0.65),
-        36.41vw 79.25vh rgba(235, 240, 255, 0.9),
-        91.31vw 40.08vh rgba(235, 240, 255, 0.65),
-        16.53vw 28.1vh rgba(235, 240, 255, 0.9),
-        76.47vw 12.53vh rgba(235, 240, 255, 0.9),
-        48.85vw 28.56vh rgba(210, 224, 255, 0.8),
-        46.7vw 24.05vh rgba(235, 240, 255, 0.9),
-        40.35vw 18.62vh rgba(235, 240, 255, 0.9),
-        47.91vw 66.06vh rgba(235, 240, 255, 0.9),
-        65.78vw 42.96vh rgba(235, 240, 255, 0.9),
-        22.58vw 9.03vh rgba(235, 240, 255, 0.9),
-        21.83vw 58.72vh rgba(235, 240, 255, 0.9),
-        69.69vw 34.97vh rgba(235, 240, 255, 0.65),
-        75.98vw 63.95vh rgba(210, 224, 255, 0.8),
-        87.78vw 40.84vh rgba(210, 224, 255, 0.8),
-        5.97vw 48.3vh rgba(235, 240, 255, 0.9),
-        96.99vw 7.32vh rgba(235, 240, 255, 0.65),
-        64.74vw 70.97vh rgba(235, 240, 255, 0.9),
-        24.73vw 97.23vh rgba(235, 240, 255, 0.65),
-        21.14vw 54.51vh rgba(235, 240, 255, 0.9),
-        81.19vw 97.87vh rgba(235, 240, 255, 0.65),
-        4.23vw 56.62vh rgba(235, 240, 255, 0.65),
-        91.96vw 81.61vh rgba(210, 224, 255, 0.8),
-        3.16vw 30.04vh rgba(217, 178, 106, 0.9),
-        5.68vw 41.55vh rgba(235, 240, 255, 0.9),
-        77.7vw 29.82vh rgba(235, 240, 255, 0.9),
-        27.48vw 48.36vh rgba(235, 240, 255, 0.9),
-        75.16vw 19.83vh rgba(235, 240, 255, 0.65),
-        35.16vw 63.26vh rgba(210, 224, 255, 0.8),
-        38.78vw 54.56vh rgba(210, 224, 255, 0.8),
-        75.76vw 29.42vh rgba(255, 244, 214, 0.85),
-        47.97vw 16.5vh rgba(235, 240, 255, 0.65),
-        23.08vw 56.17vh rgba(255, 244, 214, 0.85),
-        82.59vw 95.64vh rgba(255, 244, 214, 0.85),
-        38.97vw 0.82vh rgba(235, 240, 255, 0.65),
-        87.85vw 11.23vh rgba(210, 224, 255, 0.8),
-        69.87vw 10.42vh rgba(210, 224, 255, 0.8),
-        32.16vw 78.73vh rgba(210, 224, 255, 0.8),
-        45.13vw 30.31vh rgba(210, 224, 255, 0.8),
-        62.12vw 32.21vh rgba(235, 240, 255, 0.65),
-        70.63vw 11.39vh rgba(235, 240, 255, 0.9),
-        33.97vw 70.96vh rgba(210, 224, 255, 0.8),
-        84.27vw 7.94vh rgba(235, 240, 255, 0.65),
-        59.25vw 51.23vh rgba(235, 240, 255, 0.65),
-        21.99vw 66.26vh rgba(235, 240, 255, 0.65),
-        74.64vw 64.06vh rgba(235, 240, 255, 0.9),
-        71.4vw 96.99vh rgba(235, 240, 255, 0.65),
-        4.63vw 93.72vh rgba(210, 224, 255, 0.8),
-        11.73vw 11.5vh rgba(235, 240, 255, 0.9),
-        19.63vw 32.05vh rgba(235, 240, 255, 0.65),
-        26.46vw 54vh rgba(235, 240, 255, 0.9),
-        17.92vw 63.86vh rgba(235, 240, 255, 0.9),
-        76.48vw 78.42vh rgba(235, 240, 255, 0.9),
-        34.64vw 78.75vh rgba(217, 178, 106, 0.9),
-        50.49vw 90.85vh rgba(235, 240, 255, 0.9),
-        42.19vw 13.53vh rgba(235, 240, 255, 0.65),
-        65.95vw 51.98vh rgba(235, 240, 255, 0.65),
-        38.27vw 90.28vh rgba(210, 224, 255, 0.8),
-        30.61vw 27.62vh rgba(235, 240, 255, 0.65),
-        96.7vw 5.07vh rgba(235, 240, 255, 0.9),
-        45.52vw 44.01vh rgba(255, 244, 214, 0.85),
-        27.89vw 96vh rgba(235, 240, 255, 0.65),
-        48.61vw 63.66vh rgba(235, 240, 255, 0.9),
-        33.6vw 27.11vh rgba(235, 240, 255, 0.65),
-        29.09vw 17.03vh rgba(235, 240, 255, 0.9),
-        69.79vw 73.81vh rgba(235, 240, 255, 0.9),
-        43.45vw 98.36vh rgba(235, 240, 255, 0.9),
-        29.22vw 89.26vh rgba(235, 240, 255, 0.65),
-        0.79vw 19.61vh rgba(210, 224, 255, 0.8),
-        90.04vw 60.49vh rgba(210, 224, 255, 0.8),
-        96.64vw 8.75vh rgba(210, 224, 255, 0.8),
-        96.09vw 62.08vh rgba(235, 240, 255, 0.65),
-        48.69vw 89.7vh rgba(210, 224, 255, 0.8),
-        84vw 41.51vh rgba(255, 244, 214, 0.85),
-        69.91vw 13.67vh rgba(255, 244, 214, 0.85),
-        44.33vw 17.98vh rgba(210, 224, 255, 0.8),
-        65.97vw 96.25vh rgba(255, 244, 214, 0.85),
-        94.16vw 20.25vh rgba(235, 240, 255, 0.9),
-        94.81vw 39.51vh rgba(255, 244, 214, 0.85),
-        36.57vw 43.02vh rgba(255, 244, 214, 0.85),
-        90.45vw 27.57vh rgba(210, 224, 255, 0.8),
-        25.64vw 23.44vh rgba(217, 178, 106, 0.9),
-        1.77vw 10.97vh rgba(235, 240, 255, 0.65),
-        1.48vw 10.56vh rgba(235, 240, 255, 0.9);
+        97.07vw 50.49vh var(--s2),
+        66.66vw 4.08vh var(--s2),
+        80.11vw 17.46vh var(--s2),
+        49.23vw 63.01vh var(--s1),
+        52.8vw 93.6vh var(--s3),
+        51.73vw 90.28vh var(--s1),
+        86.27vw 39.23vh var(--s2),
+        37.03vw 69.02vh var(--s2),
+        22.72vw 63.22vh var(--s1),
+        22.2vw 49.61vh var(--s1),
+        60.58vw 26.49vh var(--s1),
+        45.03vw 34.59vh var(--s1),
+        55.29vw 75.74vh var(--s4),
+        26.71vw 53.77vh var(--s1),
+        42.51vw 57.38vh var(--s1),
+        8.7vw 85.02vh var(--s1),
+        13.75vw 45.88vh var(--s2),
+        36.41vw 79.25vh var(--s1),
+        91.31vw 40.08vh var(--s2),
+        16.53vw 28.1vh var(--s1),
+        76.47vw 12.53vh var(--s1),
+        48.85vw 28.56vh var(--s3),
+        46.7vw 24.05vh var(--s1),
+        40.35vw 18.62vh var(--s1),
+        47.91vw 66.06vh var(--s1),
+        65.78vw 42.96vh var(--s1),
+        22.58vw 9.03vh var(--s1),
+        21.83vw 58.72vh var(--s1),
+        69.69vw 34.97vh var(--s2),
+        75.98vw 63.95vh var(--s3),
+        87.78vw 40.84vh var(--s3),
+        5.97vw 48.3vh var(--s1),
+        96.99vw 7.32vh var(--s2),
+        64.74vw 70.97vh var(--s1),
+        24.73vw 97.23vh var(--s2),
+        21.14vw 54.51vh var(--s1),
+        81.19vw 97.87vh var(--s2),
+        4.23vw 56.62vh var(--s2),
+        91.96vw 81.61vh var(--s3),
+        3.16vw 30.04vh var(--s5),
+        5.68vw 41.55vh var(--s1),
+        77.7vw 29.82vh var(--s1),
+        27.48vw 48.36vh var(--s1),
+        75.16vw 19.83vh var(--s2),
+        35.16vw 63.26vh var(--s3),
+        38.78vw 54.56vh var(--s3),
+        75.76vw 29.42vh var(--s4),
+        47.97vw 16.5vh var(--s2),
+        23.08vw 56.17vh var(--s4),
+        82.59vw 95.64vh var(--s4),
+        38.97vw 0.82vh var(--s2),
+        87.85vw 11.23vh var(--s3),
+        69.87vw 10.42vh var(--s3),
+        32.16vw 78.73vh var(--s3),
+        45.13vw 30.31vh var(--s3),
+        62.12vw 32.21vh var(--s2),
+        70.63vw 11.39vh var(--s1),
+        33.97vw 70.96vh var(--s3),
+        84.27vw 7.94vh var(--s2),
+        59.25vw 51.23vh var(--s2),
+        21.99vw 66.26vh var(--s2),
+        74.64vw 64.06vh var(--s1),
+        71.4vw 96.99vh var(--s2),
+        4.63vw 93.72vh var(--s3),
+        11.73vw 11.5vh var(--s1),
+        19.63vw 32.05vh var(--s2),
+        26.46vw 54vh var(--s1),
+        17.92vw 63.86vh var(--s1),
+        76.48vw 78.42vh var(--s1),
+        34.64vw 78.75vh var(--s5),
+        50.49vw 90.85vh var(--s1),
+        42.19vw 13.53vh var(--s2),
+        65.95vw 51.98vh var(--s2),
+        38.27vw 90.28vh var(--s3),
+        30.61vw 27.62vh var(--s2),
+        96.7vw 5.07vh var(--s1),
+        45.52vw 44.01vh var(--s4),
+        27.89vw 96vh var(--s2),
+        48.61vw 63.66vh var(--s1),
+        33.6vw 27.11vh var(--s2),
+        29.09vw 17.03vh var(--s1),
+        69.79vw 73.81vh var(--s1),
+        43.45vw 98.36vh var(--s1),
+        29.22vw 89.26vh var(--s2),
+        0.79vw 19.61vh var(--s3),
+        90.04vw 60.49vh var(--s3),
+        96.64vw 8.75vh var(--s3),
+        96.09vw 62.08vh var(--s2),
+        48.69vw 89.7vh var(--s3),
+        84vw 41.51vh var(--s4),
+        69.91vw 13.67vh var(--s4),
+        44.33vw 17.98vh var(--s3),
+        65.97vw 96.25vh var(--s4),
+        94.16vw 20.25vh var(--s1),
+        94.81vw 39.51vh var(--s4),
+        36.57vw 43.02vh var(--s4),
+        90.45vw 27.57vh var(--s3),
+        25.64vw 23.44vh var(--s5),
+        1.77vw 10.97vh var(--s2),
+        1.48vw 10.56vh var(--s1);
 }
 
 .stars-b {
@@ -170,61 +181,61 @@
     animation-duration: 7s;
     animation-delay: 1.2s;
     box-shadow:
-        9.61vw 83.58vh rgba(210, 224, 255, 0.8),
-        90.45vw 84.23vh rgba(235, 240, 255, 0.9),
-        15.72vw 49.01vh rgba(235, 240, 255, 0.9),
-        88.08vw 75.07vh rgba(210, 224, 255, 0.8),
-        44.75vw 80.69vh rgba(210, 224, 255, 0.8),
-        43.83vw 96.1vh rgba(235, 240, 255, 0.9),
-        37.23vw 53.86vh rgba(235, 240, 255, 0.65),
-        9.31vw 4.99vh rgba(255, 244, 214, 0.85),
-        33.37vw 19.93vh rgba(235, 240, 255, 0.65),
-        36.13vw 74.59vh rgba(255, 244, 214, 0.85),
-        69.8vw 47.67vh rgba(235, 240, 255, 0.9),
-        1.44vw 2.77vh rgba(235, 240, 255, 0.9),
-        78.5vw 94.06vh rgba(235, 240, 255, 0.9),
-        75.91vw 96.97vh rgba(210, 224, 255, 0.8),
-        23.61vw 83.5vh rgba(235, 240, 255, 0.9),
-        13.65vw 7.08vh rgba(210, 224, 255, 0.8),
-        74.13vw 18.42vh rgba(235, 240, 255, 0.9),
-        48.3vw 21.99vh rgba(255, 244, 214, 0.85),
-        44.04vw 84.36vh rgba(255, 244, 214, 0.85),
-        73.14vw 19.29vh rgba(235, 240, 255, 0.9),
-        31.67vw 55.92vh rgba(235, 240, 255, 0.65),
-        52.56vw 58.74vh rgba(255, 244, 214, 0.85),
-        14.62vw 86.79vh rgba(235, 240, 255, 0.9),
-        13.5vw 84.36vh rgba(255, 244, 214, 0.85),
-        56.08vw 76.19vh rgba(255, 244, 214, 0.85),
-        56.39vw 39.25vh rgba(217, 178, 106, 0.9),
-        59.79vw 25.52vh rgba(235, 240, 255, 0.9),
-        4.68vw 34.78vh rgba(255, 244, 214, 0.85),
-        11.21vw 6.19vh rgba(235, 240, 255, 0.65),
-        25.74vw 85.57vh rgba(235, 240, 255, 0.65),
-        47.14vw 13.56vh rgba(255, 244, 214, 0.85),
-        9.36vw 63.18vh rgba(255, 244, 214, 0.85),
-        54.02vw 59.62vh rgba(217, 178, 106, 0.9),
-        33.06vw 73.7vh rgba(255, 244, 214, 0.85),
-        48.18vw 2.64vh rgba(210, 224, 255, 0.8),
-        69.82vw 71.58vh rgba(235, 240, 255, 0.9),
-        13.01vw 1.87vh rgba(210, 224, 255, 0.8),
-        36.17vw 88.95vh rgba(210, 224, 255, 0.8),
-        16.07vw 24.68vh rgba(235, 240, 255, 0.65),
-        59.17vw 78.09vh rgba(235, 240, 255, 0.65),
-        45.78vw 62.59vh rgba(235, 240, 255, 0.9),
-        95.81vw 20.09vh rgba(235, 240, 255, 0.9),
-        46.06vw 66.74vh rgba(210, 224, 255, 0.8),
-        37.68vw 33.51vh rgba(235, 240, 255, 0.65),
-        95.9vw 89.28vh rgba(210, 224, 255, 0.8),
-        98.38vw 3.39vh rgba(235, 240, 255, 0.65),
-        4.82vw 31.95vh rgba(255, 244, 214, 0.85),
-        31.64vw 61.37vh rgba(235, 240, 255, 0.9),
-        68.46vw 95.31vh rgba(235, 240, 255, 0.9),
-        58.91vw 13.87vh rgba(235, 240, 255, 0.9),
-        16.09vw 87.62vh rgba(235, 240, 255, 0.9),
-        33.8vw 63.73vh rgba(210, 224, 255, 0.8),
-        21.27vw 50.27vh rgba(217, 178, 106, 0.9),
-        56.27vw 52.33vh rgba(235, 240, 255, 0.9),
-        72.39vw 34.69vh rgba(255, 244, 214, 0.85);
+        9.61vw 83.58vh var(--s3),
+        90.45vw 84.23vh var(--s1),
+        15.72vw 49.01vh var(--s1),
+        88.08vw 75.07vh var(--s3),
+        44.75vw 80.69vh var(--s3),
+        43.83vw 96.1vh var(--s1),
+        37.23vw 53.86vh var(--s2),
+        9.31vw 4.99vh var(--s4),
+        33.37vw 19.93vh var(--s2),
+        36.13vw 74.59vh var(--s4),
+        69.8vw 47.67vh var(--s1),
+        1.44vw 2.77vh var(--s1),
+        78.5vw 94.06vh var(--s1),
+        75.91vw 96.97vh var(--s3),
+        23.61vw 83.5vh var(--s1),
+        13.65vw 7.08vh var(--s3),
+        74.13vw 18.42vh var(--s1),
+        48.3vw 21.99vh var(--s4),
+        44.04vw 84.36vh var(--s4),
+        73.14vw 19.29vh var(--s1),
+        31.67vw 55.92vh var(--s2),
+        52.56vw 58.74vh var(--s4),
+        14.62vw 86.79vh var(--s1),
+        13.5vw 84.36vh var(--s4),
+        56.08vw 76.19vh var(--s4),
+        56.39vw 39.25vh var(--s5),
+        59.79vw 25.52vh var(--s1),
+        4.68vw 34.78vh var(--s4),
+        11.21vw 6.19vh var(--s2),
+        25.74vw 85.57vh var(--s2),
+        47.14vw 13.56vh var(--s4),
+        9.36vw 63.18vh var(--s4),
+        54.02vw 59.62vh var(--s5),
+        33.06vw 73.7vh var(--s4),
+        48.18vw 2.64vh var(--s3),
+        69.82vw 71.58vh var(--s1),
+        13.01vw 1.87vh var(--s3),
+        36.17vw 88.95vh var(--s3),
+        16.07vw 24.68vh var(--s2),
+        59.17vw 78.09vh var(--s2),
+        45.78vw 62.59vh var(--s1),
+        95.81vw 20.09vh var(--s1),
+        46.06vw 66.74vh var(--s3),
+        37.68vw 33.51vh var(--s2),
+        95.9vw 89.28vh var(--s3),
+        98.38vw 3.39vh var(--s2),
+        4.82vw 31.95vh var(--s4),
+        31.64vw 61.37vh var(--s1),
+        68.46vw 95.31vh var(--s1),
+        58.91vw 13.87vh var(--s1),
+        16.09vw 87.62vh var(--s1),
+        33.8vw 63.73vh var(--s3),
+        21.27vw 50.27vh var(--s5),
+        56.27vw 52.33vh var(--s1),
+        72.39vw 34.69vh var(--s4);
 }
 
 .stars-c {
@@ -233,32 +244,32 @@
     animation-duration: 9.5s;
     animation-delay: 2.6s;
     box-shadow:
-        7.09vw 65.7vh 2px rgba(235, 240, 255, 0.9),
-        89.56vw 9.19vh 2px rgba(217, 178, 106, 0.9),
-        33.93vw 24.84vh 2px rgba(235, 240, 255, 0.9),
-        4.85vw 96.47vh 2px rgba(235, 240, 255, 0.9),
-        12.07vw 62.19vh 2px rgba(210, 224, 255, 0.8),
-        66.94vw 3.69vh 2px rgba(235, 240, 255, 0.9),
-        53.54vw 15.3vh 2px rgba(217, 178, 106, 0.9),
-        78.13vw 76.7vh 2px rgba(210, 224, 255, 0.8),
-        70.1vw 70.76vh 2px rgba(210, 224, 255, 0.8),
-        33.42vw 2.23vh 2px rgba(210, 224, 255, 0.8),
-        47.42vw 18.56vh 2px rgba(210, 224, 255, 0.8),
-        53vw 51.32vh 2px rgba(210, 224, 255, 0.8),
-        59.64vw 70.01vh 2px rgba(210, 224, 255, 0.8),
-        5.72vw 60.55vh 2px rgba(235, 240, 255, 0.65),
-        62.32vw 84.08vh 2px rgba(217, 178, 106, 0.9),
-        11.77vw 19.59vh 2px rgba(210, 224, 255, 0.8),
-        62.85vw 29.31vh 2px rgba(210, 224, 255, 0.8),
-        10.11vw 14.33vh 2px rgba(217, 178, 106, 0.9),
-        17.57vw 69.11vh 2px rgba(235, 240, 255, 0.9),
-        77.33vw 91.89vh 2px rgba(235, 240, 255, 0.65),
-        43.47vw 86.85vh 2px rgba(235, 240, 255, 0.9),
-        21.97vw 17.25vh 2px rgba(235, 240, 255, 0.9),
-        50.95vw 32.01vh 2px rgba(235, 240, 255, 0.9),
-        55.57vw 6.35vh 2px rgba(210, 224, 255, 0.8),
-        92.94vw 36.39vh 2px rgba(235, 240, 255, 0.65),
-        40.05vw 57.95vh 2px rgba(235, 240, 255, 0.65);
+        7.09vw 65.7vh 2px var(--s1),
+        89.56vw 9.19vh 2px var(--s5),
+        33.93vw 24.84vh 2px var(--s1),
+        4.85vw 96.47vh 2px var(--s1),
+        12.07vw 62.19vh 2px var(--s3),
+        66.94vw 3.69vh 2px var(--s1),
+        53.54vw 15.3vh 2px var(--s5),
+        78.13vw 76.7vh 2px var(--s3),
+        70.1vw 70.76vh 2px var(--s3),
+        33.42vw 2.23vh 2px var(--s3),
+        47.42vw 18.56vh 2px var(--s3),
+        53vw 51.32vh 2px var(--s3),
+        59.64vw 70.01vh 2px var(--s3),
+        5.72vw 60.55vh 2px var(--s2),
+        62.32vw 84.08vh 2px var(--s5),
+        11.77vw 19.59vh 2px var(--s3),
+        62.85vw 29.31vh 2px var(--s3),
+        10.11vw 14.33vh 2px var(--s5),
+        17.57vw 69.11vh 2px var(--s1),
+        77.33vw 91.89vh 2px var(--s2),
+        43.47vw 86.85vh 2px var(--s1),
+        21.97vw 17.25vh 2px var(--s1),
+        50.95vw 32.01vh 2px var(--s1),
+        55.57vw 6.35vh 2px var(--s3),
+        92.94vw 36.39vh 2px var(--s2),
+        40.05vw 57.95vh 2px var(--s2);
 }
 
 @keyframes twinkle {
@@ -277,7 +288,7 @@
     position: absolute;
     height: 1.5px;
     border-radius: 2px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 55%, transparent);
+    background: var(--meteor-grad);
     opacity: 0;
     transform: rotate(-32deg);
     animation: meteor-fly 10s linear infinite;

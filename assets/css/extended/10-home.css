@@ -33,6 +33,15 @@
     stroke: var(--accent);
     stroke-width: 0.8;
     opacity: 0.45;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: dipper-draw 2s var(--ease) 0.5s forwards;
+}
+
+@keyframes dipper-draw {
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
 .constellation circle {
@@ -67,6 +76,23 @@
     font-size: 0.7rem;
     letter-spacing: 0.13em;
     text-transform: uppercase;
+    animation: rise 0.7s var(--ease) both;
+}
+
+.masthead-main {
+    animation: rise 0.7s var(--ease) 0.12s both;
+}
+
+.masthead-foot {
+    animation: rise 0.7s var(--ease) 0.24s both;
+}
+
+.pinned-block {
+    animation: rise 0.7s var(--ease) 0.34s both;
+}
+
+.index-block {
+    animation: rise 0.7s var(--ease) 0.44s both;
 }
 
 .masthead-kicker {
@@ -351,6 +377,12 @@
     gap: 0 1.5rem;
     padding: clamp(1.5rem, 3vw, 2rem) 0;
     border-bottom: 1px solid var(--rule);
+    transition: transform 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.index-row:hover {
+    transform: translateX(5px);
+    border-bottom-color: var(--rule-strong);
 }
 
 .index-num {

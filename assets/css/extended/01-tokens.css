@@ -27,6 +27,16 @@
     --code-block-rule: #232a45;
     --code-block-text: #d5dae8;
 
+    /* sky — dawn remnant stars, visible on pale sky */
+    --s1: rgba(64, 74, 120, 0.6);
+    --s2: rgba(64, 74, 120, 0.42);
+    --s3: rgba(80, 100, 160, 0.5);
+    --s4: rgba(176, 132, 64, 0.55);
+    --s5: rgba(146, 104, 38, 0.65);
+    --neb1: rgba(238, 180, 130, 0.25);
+    --neb2: rgba(150, 170, 230, 0.28);
+    --meteor-grad: linear-gradient(90deg, rgba(50, 60, 100, 0.85), rgba(50, 60, 100, 0.3) 55%, transparent);
+
     /* theme-variable bridge: keep PaperMod components on the same palette */
     --theme: var(--paper);
     --entry: var(--paper-2);
@@ -76,6 +86,16 @@
     --code-block-rule: #1d2440;
     --code-block-text: #d5dae8;
 
+    /* sky — night stars */
+    --s1: rgba(235, 240, 255, 0.9);
+    --s2: rgba(235, 240, 255, 0.65);
+    --s3: rgba(210, 224, 255, 0.8);
+    --s4: rgba(255, 244, 214, 0.85);
+    --s5: rgba(217, 178, 106, 0.9);
+    --neb1: rgba(88, 116, 200, 0.15);
+    --neb2: rgba(146, 96, 190, 0.1);
+    --meteor-grad: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 55%, transparent);
+
     --theme: var(--paper);
     --entry: var(--paper-2);
     --primary: var(--ink);
@@ -111,6 +131,14 @@
         --code-block: #070a14;
         --code-block-rule: #1d2440;
         --code-block-text: #d5dae8;
+        --s1: rgba(235, 240, 255, 0.9);
+        --s2: rgba(235, 240, 255, 0.65);
+        --s3: rgba(210, 224, 255, 0.8);
+        --s4: rgba(255, 244, 214, 0.85);
+        --s5: rgba(217, 178, 106, 0.9);
+        --neb1: rgba(88, 116, 200, 0.15);
+        --neb2: rgba(146, 96, 190, 0.1);
+        --meteor-grad: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 55%, transparent);
         --theme: var(--paper);
         --entry: var(--paper-2);
         --primary: var(--ink);
