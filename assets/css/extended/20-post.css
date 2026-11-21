@@ -24,7 +24,7 @@
     margin-top: 1.15rem;
     color: var(--muted);
     font-family: var(--mono);
-    font-size: 0.69rem;
+    font-size: 0.7rem;
     letter-spacing: 0.03em;
 }
 
@@ -167,7 +167,7 @@
     margin: 0 0 0.85rem;
     color: var(--ink);
     font-family: var(--mono);
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
 }
 
@@ -639,7 +639,7 @@
 
 .post-tags-block .mono-label {
     margin: 0;
-    font-size: 0.66rem;
+    font-size: 0.7rem;
 }
 
 .post-nav {

@@ -71,7 +71,7 @@
     }
 
     .archive-meta {
-        font-size: 0.67rem;
+        font-size: 0.7rem;
     }
 
     .index-title a {
@@ -100,7 +100,7 @@
 
     .masthead-avatar figcaption {
         margin-top: 0.4rem;
-        font-size: 0.6rem;
+        font-size: 0.7rem;
         text-align: left;
     }
 
@@ -295,7 +295,7 @@
 
     .home-links a {
         padding: 0 0.65rem;
-        font-size: 0.68rem;
+        font-size: 0.7rem;
     }
 
     .footer {
@@ -310,7 +310,7 @@
 
 @media (max-width: 420px) {
     .masthead-top {
-        font-size: 0.68rem;
+        font-size: 0.7rem;
         letter-spacing: 0.1em;
     }
 
@@ -340,24 +340,24 @@
     }
 
     .section-note {
-        font-size: 0.62rem;
+        font-size: 0.7rem;
     }
 
     .masthead-stat {
-        font-size: 0.68rem;
+        font-size: 0.7rem;
     }
 
     .pager {
         gap: 0.5rem;
-        font-size: 0.66rem;
+        font-size: 0.7rem;
     }
 
     .pager-link {
-        font-size: 0.66rem;
+        font-size: 0.7rem;
     }
 
     .index-num {
-        font-size: 0.66rem;
+        font-size: 0.7rem;
     }
 
     .home-links {
