@@ -1,0 +1,78 @@
+baseURL: "https://body.is-a.dev/"
+title: "body"
+theme: "PaperMod"
+
+defaultContentLanguage: "zh"
+locale: "zh-CN"
+enableRobotsTXT: true
+enableEmoji: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+pagination:
+  pagerSize: 10
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+params:
+  env: production
+  description: "随手记一些踩坑和想法。"
+  author: "body"
+  DateFormat: "2006-01-02"
+  defaultTheme: auto
+  disableThemeToggle: false
+
+  ShowReadingTime: true
+  ShowWordCount: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowRssButtonInSectionTermList: true
+  ShowToc: false
+  TocOpen: false
+  UseHugoToc: true
+  hideSummary: false
+  comments: false
+
+  homeInfoParams:
+    Title: "Hi 👋"
+    Content: "这里是我的备忘簿：写点技术笔记、踩过的坑，以及暂时想明白的事。"
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/TsukimioRinka"
+    - name: rss
+      url: "/index.xml"
+
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content"]
+
+menu:
+  main:
+    - name: 文章
+      url: /posts/
+      weight: 10
+    - name: 归档
+      url: /archives/
+      weight: 20
+    - name: 标签
+      url: /tags/
+      weight: 30
+    - name: 搜索
+      url: /search/
+      weight: 40
+    - name: 关于
+      url: /about/
+      weight: 50
