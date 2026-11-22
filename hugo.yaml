@@ -4,6 +4,7 @@ theme: "PaperMod"
 
 defaultContentLanguage: "zh"
 locale: "zh-CN"
+hasCJKLanguage: true
 titleCaseStyle: "none"
 enableRobotsTXT: true
 disableKinds: ["RSS"]
