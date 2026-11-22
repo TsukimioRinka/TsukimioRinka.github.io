@@ -27,7 +27,8 @@
         </header>
 
         {{- range .Pages.GroupByDate "01" }}
-        {{- $month := int .Key }}
+        {{- /* "08"/"09" would be read as invalid octal by int, so trim the zero instead */}}
+        {{- $month := strings.TrimPrefix "0" .Key }}
         <div class="archive-month">
             <h3 class="month-label">{{ $month }} 月</h3>
             <ol class="archive-list">
