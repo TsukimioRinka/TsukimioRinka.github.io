@@ -2,7 +2,7 @@
 {{- $toc := string .TableOfContents }}
 {{- $tocCount := len (findRE "<li" $toc) }}
 {{- $showToc := and (.Param "ShowToc") (gt $tocCount 0) }}
-<article class="post-single{{ if $showToc }} has-toc{{ end }}">
+<article class="post-single{{ if eq .Section "posts" }} is-post{{ end }}{{ if $showToc }} has-toc{{ end }}">
     <div class="post-column">
         <header class="post-header">
             {{ partial "breadcrumbs.html" . }}
@@ -50,6 +50,12 @@
         <div class="post-content md-content" id="main-content">
             {{- partial "anchored_headings.html" .Content }}
         </div>
+        {{- if eq .Section "posts" }}
+        <p class="post-coda">
+            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0 7.2 4.8 12 6 7.2 7.2 6 12 4.8 7.2 0 6 4.8 4.8Z"></path></svg>
+            <span>读完了。抬头看看星星吧。</span>
+        </p>
+        {{- end }}
         {{- end }}
 
         {{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections }}

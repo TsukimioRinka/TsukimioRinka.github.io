@@ -1,0 +1,664 @@
+/* ==========================================================================
+   Starsea — 首页星海：每篇文章是一颗星，旅人沿时间之河去到那一天
+   The bottom edge fades into the page paper.
+   Positions come from the template: --x/--y (wide), --mx/--my (≤700px), in %.
+   ========================================================================== */
+
+.main--home {
+    max-width: none;
+    padding: 0;
+}
+
+.main--home .home-wrap {
+    max-width: calc(60rem + 2 * var(--gutter));
+    padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.starsea {
+    --n-ink: #f0ebde;
+    --n-text: #c9cfdd;
+    --n-muted: #a3abc2;
+    --n-gold: #e6c27a;
+    --n-gold-soft: rgba(230, 194, 122, 0.45);
+    position: relative;
+    isolation: isolate;
+    height: clamp(560px, calc(100vh - var(--header-h)), 1080px);
+    height: clamp(560px, calc(100svh - var(--header-h)), 1080px);
+    overflow: hidden;
+    color: var(--n-text);
+    background:
+        radial-gradient(70% 55% at 82% 6%, rgba(96, 112, 205, 0.18), transparent 70%),
+        radial-gradient(60% 50% at 8% 92%, rgba(150, 100, 190, 0.11), transparent 70%),
+        linear-gradient(180deg, #050915 0%, #091030 58%, #0c1335 100%);
+    outline: none;
+}
+
+/* dissolve into the page below: night stays night, or night turns to dawn */
+.starsea::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 64px;
+    background: linear-gradient(to bottom, rgba(12, 19, 53, 0), var(--paper));
+    pointer-events: none;
+}
+
+.starsea-sky {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.starsea-stars {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.starsea-stars li {
+    display: contents;
+}
+
+/* --- stars: one per post --------------------------------------------------- */
+
+.tstar,
+.ttoday,
+.tyear,
+.traveler {
+    position: absolute;
+    left: calc(var(--x) * 1%);
+    top: calc(var(--y) * 1%);
+}
+
+.tstar {
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    border-radius: 50%;
+    color: var(--n-ink);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tstar-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(40px * var(--mag, 1));
+    height: calc(40px * var(--mag, 1));
+    margin: calc(-20px * var(--mag, 1)) 0 0 calc(-20px * var(--mag, 1));
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 228, 166, 0.6) 0%, rgba(255, 212, 140, 0.16) 36%, transparent 70%);
+    animation: tstar-breathe 4.8s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -0.9s);
+    transition: transform 0.35s var(--ease), opacity 0.35s var(--ease);
+}
+
+.tstar-core {
+    position: relative;
+    width: calc(5px * var(--mag, 1));
+    height: calc(5px * var(--mag, 1));
+    border-radius: 50%;
+    background: #fff6dc;
+    box-shadow: 0 0 6px 1px rgba(255, 230, 172, 0.9);
+}
+
+/* four-point spikes */
+.tstar-core::before,
+.tstar-core::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1px;
+    height: calc(18px * var(--mag, 1));
+    background: linear-gradient(transparent, rgba(255, 242, 210, 0.9), transparent);
+    transform: translate(-50%, -50%);
+}
+
+.tstar-core::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.tstar.is-pinned .tstar-core {
+    background: #ffe7ad;
+}
+
+.tstar-label {
+    position: absolute;
+    left: calc(50% + 16px);
+    top: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.25s var(--ease);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.tstar-date {
+    color: var(--n-gold);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+}
+
+.tstar-title {
+    max-width: 16em;
+    overflow: hidden;
+    color: var(--n-ink);
+    font-family: var(--serif);
+    font-size: 0.92rem;
+    text-overflow: ellipsis;
+}
+
+/* with JS the caption carries the title; the label keeps only the date */
+.starsea.is-live .tstar-title {
+    display: none;
+}
+
+.tstar:hover .tstar-label,
+.tstar:focus-visible .tstar-label,
+.tstar.is-current .tstar-label {
+    opacity: 1;
+}
+
+.tstar:hover .tstar-glow,
+.tstar:focus-visible .tstar-glow,
+.tstar.is-current .tstar-glow {
+    animation: none;
+    opacity: 1;
+    transform: scale(1.55);
+}
+
+.tstar:focus-visible,
+.ttoday:focus-visible,
+.starsea a:focus-visible,
+.starsea button:focus-visible {
+    outline: 1px solid var(--n-gold);
+    outline-offset: 3px;
+}
+
+@keyframes tstar-breathe {
+    from {
+        opacity: 0.45;
+        transform: scale(0.82);
+    }
+
+    to {
+        opacity: 0.9;
+        transform: scale(1.12);
+    }
+}
+
+.tyear {
+    z-index: 2;
+    margin-top: 20px;
+    transform: translateX(-50%);
+    color: rgba(230, 194, 122, 0.62);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    pointer-events: none;
+}
+
+/* --- today: the traveler's little planet ----------------------------------- */
+
+.ttoday {
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.ttoday-planet {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 30%, #fff4d4 0%, #e3bd72 48%, #8c6a33 100%);
+    box-shadow: 0 0 16px 3px rgba(255, 214, 140, 0.42);
+}
+
+.ttoday-label {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 15px);
+    transform: translateY(-50%);
+    color: var(--n-gold);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+}
+
+/* --- the traveler: a small figure made of starlight ------------------------ */
+
+.traveler {
+    z-index: 4;
+    width: 28px;
+    height: 37px;
+    margin: -46px 0 0 -14px;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.starsea.is-live .traveler {
+    left: 0;
+    top: 0;
+    margin: -37px 0 0 -14px;
+    will-change: transform;
+}
+
+.traveler-flip {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.25s var(--ease);
+}
+
+.traveler-flip.is-left {
+    transform: scaleX(-1);
+}
+
+.traveler svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 0 5px rgba(255, 222, 156, 0.6));
+    animation: traveler-bob 3.4s ease-in-out infinite alternate;
+}
+
+.traveler.is-flying svg {
+    animation: none;
+}
+
+.traveler.is-hidden {
+    opacity: 0;
+}
+
+.tr-body {
+    fill: #f4e9cc;
+}
+
+.tr-scarf,
+.tr-scarf-tail {
+    fill: #e2ad4f;
+}
+
+.tr-scarf-tail {
+    transform-box: fill-box;
+    transform-origin: 100% 30%;
+    animation: tr-scarf 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes traveler-bob {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes tr-scarf {
+    from {
+        transform: rotate(-6deg);
+    }
+
+    to {
+        transform: rotate(8deg);
+    }
+}
+
+/* --- the caption: where (when) the traveler is ------------------------------ */
+
+.starsea-note {
+    position: absolute;
+    right: max(var(--gutter), 6vw);
+    bottom: max(13%, 104px);
+    z-index: 3;
+    width: min(26rem, 38vw);
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--n-gold-soft);
+    text-shadow: 0 0 18px #070b1d, 0 0 4px #070b1d;
+    transition: opacity 0.16s ease;
+}
+
+.starsea-note.is-swap {
+    opacity: 0;
+}
+
+.note-when {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.9rem;
+    margin: 0;
+    color: var(--n-gold);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+}
+
+.note-ago {
+    color: var(--n-muted);
+}
+
+.note-title {
+    margin: 0.55rem 0 0.5rem;
+    color: var(--n-ink);
+    font-family: var(--serif);
+    font-size: clamp(1.25rem, 1.9vw, 1.55rem);
+    font-weight: 500;
+    line-height: 1.45;
+    text-wrap: balance;
+}
+
+.note-title a {
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(var(--n-gold-soft), var(--n-gold-soft));
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+}
+
+.note-title a:hover {
+    color: var(--n-gold);
+}
+
+.note-summary {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    color: var(--n-muted);
+    font-size: 0.94rem;
+    line-height: 1.75;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.note-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.4rem;
+    margin: 0.35rem 0 0;
+}
+
+.note-go,
+.note-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--n-gold);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.note-back {
+    color: var(--n-muted);
+}
+
+.note-go:hover,
+.note-back:hover {
+    color: var(--n-ink);
+}
+
+.note-go[hidden],
+.note-back[hidden] {
+    display: none;
+}
+
+/* --- small corner controls --------------------------------------------------- */
+
+.starsea-back {
+    position: absolute;
+    top: 0.75rem;
+    left: max(var(--gutter), 6vw);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--n-muted);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+}
+
+.starsea-back[hidden] {
+    display: none;
+}
+
+.starsea-back svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+}
+
+.starsea-back:hover {
+    color: var(--n-gold);
+}
+
+.starsea-older {
+    position: absolute;
+    left: max(var(--gutter), 6vw);
+    bottom: max(13%, 104px);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--n-muted);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+}
+
+.starsea-older:hover {
+    color: var(--n-gold);
+}
+
+.starsea-down {
+    position: absolute;
+    left: 50%;
+    bottom: 72px;
+    z-index: 3;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 44px;
+    min-height: 44px;
+    padding-left: 0.24em;
+    transform: translateX(-50%);
+    color: var(--n-muted);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    white-space: nowrap;
+}
+
+.starsea-down svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: down-drift 2.4s ease-in-out infinite;
+}
+
+.starsea-down:hover {
+    color: var(--n-gold);
+}
+
+@keyframes down-drift {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translateY(4px);
+        opacity: 1;
+    }
+}
+
+/* --- arrival: stars light up along the river, past → today ----------------- */
+
+.starsea.is-live .tstar,
+.starsea.is-live .tyear,
+.starsea.is-live .ttoday {
+    opacity: 0;
+}
+
+.starsea.is-awake .tstar,
+.starsea.is-awake .tyear,
+.starsea.is-awake .ttoday {
+    animation: tstar-in 0.9s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+}
+
+.starsea.is-awake .ttoday {
+    animation-delay: 0.1s;
+}
+
+@keyframes tstar-in {
+    from {
+        opacity: 0;
+        transform: scale(0.4);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.starsea.is-awake .tyear {
+    animation-name: tyear-in;
+}
+
+@keyframes tyear-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* --- phones: the river turns into an S from lower-left to the top ---------- */
+
+@media (max-width: 700px) {
+    .tstar,
+    .ttoday,
+    .tyear,
+    .traveler {
+        left: calc(var(--mx) * 1%);
+        top: calc(var(--my) * 1%);
+    }
+
+    .starsea-note {
+        left: var(--gutter);
+        right: var(--gutter);
+        bottom: 116px;
+        width: auto;
+    }
+
+    .note-title {
+        font-size: 1.25rem;
+    }
+
+    .note-summary {
+        font-size: 0.92rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .starsea-down {
+        bottom: 64px;
+    }
+
+    .starsea-older {
+        top: 0.75rem;
+        right: var(--gutter);
+        bottom: auto;
+        left: auto;
+    }
+
+    .tstar-label {
+        left: calc(50% + 12px);
+    }
+
+    /* the S runs vertically in the middle: years go beside the star, not under it */
+    .tyear {
+        margin-top: 0;
+        margin-left: -16px;
+        transform: translate(-100%, -50%);
+    }
+}
+
+html.calm .tstar-glow,
+html.calm .traveler svg,
+html.calm .tr-scarf-tail,
+html.calm .starsea-down svg {
+    animation: none !important;
+}
+
+html.calm .traveler {
+    transition: opacity 0.2s ease !important;
+}
+
+@media print {
+    .starsea {
+        display: none;
+    }
+}

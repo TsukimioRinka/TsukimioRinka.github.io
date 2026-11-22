@@ -1,0 +1,120 @@
+{{- /* 星海：每篇文章是一颗星，沿一条时间之河从过去（左下）流向今天（右上）。
+     两颗星的间距随间隔天数取对数增长：隔得越久，离得越远。
+     位置在构建时算好写进 CSS 变量（--x/--y 宽屏，--mx/--my 手机），没有 JS 也能看。
+     JS（starsea-script.html）负责星空、河流、旅人飞行和注记更新。
+     参数：dict "pages" <文章集合> */ -}}
+{{- $cap := 24 }}
+{{- $byDate := .pages.ByDate }}
+{{- $total := len $byDate }}
+{{- $shown := $byDate }}
+{{- if gt $total $cap }}{{ $shown = last $cap $byDate }}{{ end }}
+{{- $n := len $shown }}
+{{- $older := sub $total $n }}
+
+{{- /* cumulative gaps along the river */}}
+{{- $cum := slice }}
+{{- $acc := 0.0 }}
+{{- $prevU := 0 }}
+{{- range $i, $p := $shown }}
+{{- if gt $i 0 }}
+{{- $days := div (float (sub $p.Date.Unix $prevU)) 86400.0 }}
+{{- $acc = add $acc (add 0.6 (math.Min 1.6 (div (math.Log (add 1.0 (math.Max 0.0 $days))) 2.302585))) }}
+{{- end }}
+{{- $cum = $cum | append $acc }}
+{{- $prevU = $p.Date.Unix }}
+{{- end }}
+{{- $span := 0.0 }}
+{{- if gt $n 0 }}
+{{- $days := div (float (sub now.Unix $prevU)) 86400.0 }}
+{{- $span = add $acc (add 0.6 (math.Min 1.6 (div (math.Log (add 1.0 (math.Max 0.0 $days))) 2.302585))) }}
+{{- end }}
+
+{{- /* the river itself, sampled for the canvas */}}
+{{- $river := slice }}
+{{- $riverM := slice }}
+{{- range $k := seq 0 48 }}
+{{- $pos := partial "starsea-pos.html" (div (float $k) 48.0) }}
+{{- $river = $river | append (printf "%.2f,%.2f" $pos.x $pos.y) }}
+{{- $riverM = $riverM | append (printf "%.2f,%.2f" $pos.mx $pos.my) }}
+{{- end }}
+{{- $today := partial "starsea-pos.html" 1.0 }}
+{{- $todayVars := printf "--x:%.2f;--y:%.2f;--mx:%.2f;--my:%.2f" $today.x $today.y $today.mx $today.my }}
+
+<section class="starsea" id="starsea" tabindex="-1" data-night
+    aria-label="星海：每一颗星是一篇文章，越靠右上越接近今天"
+    data-river="{{ delimit $river " " }}" data-river-m="{{ delimit $riverM " " }}">
+    <canvas class="starsea-sky" aria-hidden="true"></canvas>
+
+    <button class="starsea-back" type="button" hidden>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13c2-3 4-4.5 6-4.5S12 10 14 13M5 9.6 4 6.5M8 8.4V5M11 9.6l1-3.1"></path></svg>
+        回到草地
+    </button>
+
+    <ol class="starsea-stars">
+        {{- $prevYear := 0 }}
+        {{- range $i, $p := $shown }}
+        {{- $t := 0.0 }}
+        {{- if gt $span 0.0 }}{{ $t = div (index $cum $i) $span }}{{ end }}
+        {{- $pos := partial "starsea-pos.html" $t }}
+        {{- $mag := add 1.0 (math.Min 0.4 (div (float $p.WordCount) 6000.0)) }}
+        {{- if $p.Params.pin }}{{ $mag = add $mag 0.15 }}{{ end }}
+        {{- $vars := printf "--x:%.2f;--y:%.2f;--mx:%.2f;--my:%.2f;--mag:%.2f;--i:%d" $pos.x $pos.y $pos.mx $pos.my $mag $i }}
+        <li>
+            <a class="tstar{{ if $p.Params.pin }} is-pinned{{ end }}" href="{{ $p.RelPermalink }}" style="{{ $vars | safeCSS }}"
+                data-stop="post" data-t="{{ printf "%.4f" $t }}"
+                data-iso="{{ $p.Date.Format "2006-01-02" }}" data-date="{{ $p.Date.Format "2006 年 1 月 2 日" }}"
+                data-title="{{ $p.Title }}" data-summary="{{ $p.Summary | plainify | htmlUnescape | truncate 96 }}"
+                aria-label="{{ $p.Date.Format "2006 年 1 月 2 日" }}：{{ $p.Title }}">
+                <span class="tstar-glow" aria-hidden="true"></span>
+                <span class="tstar-core" aria-hidden="true"></span>
+                <span class="tstar-label" aria-hidden="true">
+                    <span class="tstar-date">{{ $p.Date.Format "01.02" }}</span>
+                    <span class="tstar-title">{{ $p.Title }}</span>
+                </span>
+            </a>
+            {{- if ne $p.Date.Year $prevYear }}
+            <span class="tyear" style="{{ printf "--x:%.2f;--y:%.2f;--mx:%.2f;--my:%.2f" $pos.x $pos.y $pos.mx $pos.my | safeCSS }}" aria-hidden="true">{{ $p.Date.Year }}</span>
+            {{- end }}
+            {{- $prevYear = $p.Date.Year }}
+        </li>
+        {{- end }}
+    </ol>
+
+    <button class="ttoday is-current" type="button" data-stop="today" data-t="1" style="{{ $todayVars | safeCSS }}"
+        aria-label="今天：让旅人回到这里">
+        <span class="ttoday-planet" aria-hidden="true"></span>
+        <span class="ttoday-label" aria-hidden="true">今天</span>
+    </button>
+
+    <span class="traveler" style="{{ $todayVars | safeCSS }}" aria-hidden="true">
+        <span class="traveler-flip">
+            <svg viewBox="0 0 24 32" width="24" height="32">
+                <path class="tr-scarf-tail" d="M9.2 12.4C6.6 11.6 4.4 13.4 1 12c1.2 2.7 4.4 3.5 8 2.1z"></path>
+                <path class="tr-body" d="M8.3 12.6c-.8 4.3-1.6 8.6-2.2 13.2h11.8c-.6-4.6-1.4-8.9-2.2-13.2-1.9-1.1-5.5-1.1-7.4 0z"></path>
+                <path class="tr-body" d="M9.1 25.4h2.2v5.4H9.1zM12.7 25.4h2.2v5.4h-2.2z"></path>
+                <circle class="tr-body" cx="12" cy="7.6" r="4.3"></circle>
+                <path class="tr-body" d="M8.6 5.4 7.4 1.9l3 2.1M11.3 3.6 12.4.4l1 3.3M14.2 4.1l2.6-2-.7 3.4z"></path>
+                <path class="tr-scarf" d="M8.4 11.6c2.2 1.3 5 1.3 7.2 0l-.3 2c-2.1 1-4.5 1-6.6 0z"></path>
+            </svg>
+        </span>
+    </span>
+
+    <div class="starsea-note">
+        <p class="note-when"><span class="note-date">今天</span><span class="note-ago"></span></p>
+        <p class="note-title">{{ if $n }}碰一碰星星，我带你回到那一天。{{ else }}天上还没有星星。{{ end }}</p>
+        <p class="note-summary">{{ if $n }}天上有 {{ $total }} 颗星，每一颗都是一段写下来的时间。{{ else }}等我写下第一段时间，这里就会亮起来。{{ end }}</p>
+        <p class="note-actions">
+            <a class="note-go" href="#" hidden>去那一天 <span aria-hidden="true">→</span></a>
+            <button class="note-back" type="button" hidden>回到今天</button>
+        </p>
+    </div>
+
+    {{- if gt $older 0 }}
+    <a class="starsea-older" href="{{ "/archives/" | relLangURL }}">更早的 {{ $older }} 颗星在归档里 <span aria-hidden="true">→</span></a>
+    {{- end }}
+
+    <a class="starsea-down" href="#writing">
+        <span>往下，是文章</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6"></path></svg>
+    </a>
+</section>

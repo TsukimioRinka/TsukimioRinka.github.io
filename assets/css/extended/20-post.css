@@ -262,8 +262,9 @@
     margin-bottom: 0;
 }
 
-/* 首字下沉 — vermilion initial, one character per article */
-.md-content > p:first-child::first-letter {
+/* 首字下沉 — one gold initial per article (not on pages like 关于,
+   whose first character may be 「一」 and would read as a dash) */
+.is-post .md-content > p:first-child::first-letter {
     float: left;
     margin: 0.05em 0.16em 0 0;
     color: var(--accent);
@@ -718,4 +719,37 @@
         position: sticky;
         top: 2rem;
     }
+}
+
+/* --- coda: a small star and one line after the last paragraph ------------- */
+
+.post-coda {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 3.2rem 0 0;
+    color: var(--muted);
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    letter-spacing: 0.16em;
+}
+
+.post-coda::before,
+.post-coda::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule-strong));
+}
+
+.post-coda::after {
+    background: linear-gradient(90deg, var(--rule-strong), transparent);
+}
+
+.post-coda svg {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    fill: var(--accent);
+    animation: star-pulse 3.6s ease-in-out infinite alternate;
 }

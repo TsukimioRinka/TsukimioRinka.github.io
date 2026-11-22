@@ -26,8 +26,8 @@ params:
   author: "body"
   mainSections: ["posts"]
   DateFormat: "2006-01-02"
-  defaultTheme: auto
-  disableThemeToggle: false
+  defaultTheme: dark
+  disableThemeToggle: true
 
   ShowReadingTime: true
   ShowWordCount: true
@@ -40,6 +40,9 @@ params:
   UseHugoToc: true
   hideSummary: false
   comments: false
+
+  footer:
+    text: "晚安。愿你今晚也能看见星星。"
 
   homeInfoParams:
     Title: "技术备忘簿"

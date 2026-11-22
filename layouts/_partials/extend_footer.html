@@ -1,124 +1,300 @@
-{{- /* Cursor stardust: a faint star trail follows the pointer.
-     Only on precise pointers, never under reduced-motion. Colors track the theme. */ -}}
+{{- /* Site-wide effects on one canvas above the page (z 160):
+     - star trail: a faint hairline with sparse stardust, mouse/pen only;
+     - click bloom: a burst of stars wherever you press (mouse, pen or touch);
+     plus the header motion switch and the reading comet on articles.
+     When html.calm is set nothing travels: the trail and the bloom only fade in place. */ -}}
 <script>
 (() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (!matchMedia('(pointer: fine)').matches) return;
+    const motion = window.bodyMotion;
+    const calm = () => !!(motion && motion.calm());
 
+    /* ---------- header motion switch ---------- */
+    const btn = document.getElementById('motion-toggle');
+    if (btn && motion) {
+        const sync = () => {
+            const on = !calm();
+            btn.setAttribute('aria-pressed', String(on));
+            btn.title = on ? '让星星安静下来 (Alt + T)' : '让星星动起来 (Alt + T)';
+        };
+        sync();
+        btn.addEventListener('click', () => motion.set(calm()));
+        addEventListener('motionchange', sync);
+    }
+
+    /* ---------- the effects canvas ---------- */
     const canvas = document.createElement('canvas');
     canvas.className = 'stardust';
     canvas.setAttribute('aria-hidden', 'true');
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
-
-    let dpr = 1, w = 0, h = 0;
+    let dpr = 1;
     const resize = () => {
-        dpr = Math.min(devicePixelRatio || 1, 2);
-        w = innerWidth; h = innerHeight;
-        canvas.width = w * dpr; canvas.height = h * dpr;
-        canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(innerWidth * dpr);
+        canvas.height = Math.round(innerHeight * dpr);
     };
     resize();
     addEventListener('resize', resize);
 
-    const root = document.documentElement;
-    const readPalette = () => {
-        const cs = getComputedStyle(root);
-        return ['--s1', '--s3', '--s4', '--s5', '--accent']
-            .map(k => cs.getPropertyValue(k).trim())
-            .filter(Boolean);
-    };
-    let colors = readPalette();
-    const refresh = () => { colors = readPalette(); };
-    const toggle = document.getElementById('theme-toggle');
-    if (toggle) toggle.addEventListener('click', () => setTimeout(refresh, 80));
-    const darkQuery = matchMedia('(prefers-color-scheme: dark)');
-    if (darkQuery.addEventListener) darkQuery.addEventListener('change', refresh);
-
-    const nightMode = () => root.dataset.theme === 'dark' ||
-        (root.dataset.theme === 'auto' && darkQuery.matches);
-
-    const parts = [];
-    let raf = 0, lx = -1, ly = -1, last = 0;
-
-    const spawnOne = (x, y, dx, dy) => {
-        if (parts.length > 170) parts.splice(0, parts.length - 170);
-        parts.push({
-            x: x + (Math.random() - 0.5) * 3.5,
-            y: y + (Math.random() - 0.5) * 3.5,
-            vx: -dx * 0.02 + (Math.random() - 0.5) * 0.4,
-            vy: -dy * 0.02 + (Math.random() - 0.5) * 0.4,
-            life: 0,
-            ttl: 0.6 + Math.random() * 0.7,
-            size: 0.8 + Math.random() * 1.8,
-            color: colors[Math.random() * colors.length | 0],
-            star: Math.random() < 0.15,
-            phase: Math.random() * 6.28
-        });
-    };
-
-    /* walk the pointer segment so the trail reads as a ribbon, not dots */
-    const spawnAlong = (x0, y0, x1, y1) => {
-        const dx = x1 - x0, dy = y1 - y0;
-        const dist = Math.hypot(dx, dy);
-        const steps = Math.max(1, Math.floor(dist / 4));
-        for (let i = 1; i <= steps; i++) {
-            spawnOne(x0 + dx * i / steps, y0 + dy * i / steps, dx / steps, dy / steps);
+    const sprites = new Map();
+    const sprite = (rgb) => {
+        let c = sprites.get(rgb);
+        if (!c) {
+            c = document.createElement('canvas');
+            c.width = c.height = 32;
+            const g = c.getContext('2d');
+            const r = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+            r.addColorStop(0, `rgba(${rgb},1)`);
+            r.addColorStop(0.35, `rgba(${rgb},0.32)`);
+            r.addColorStop(1, `rgba(${rgb},0)`);
+            g.fillStyle = r;
+            g.fillRect(0, 0, 32, 32);
+            sprites.set(rgb, c);
         }
+        return c;
+    };
+    const TRAIL = ['255,247,224', '255,226,160', '204,220,255', '170,192,255'];
+    const BLOOM = ['255,247,224', '255,224,150', '236,196,120', '205,222,255', '160,186,255', '214,190,255'];
+    const pick = (a) => a[Math.random() * a.length | 0];
+
+    const star4 = (x, y, s) => {
+        const k = s * 0.24;
+        ctx.beginPath();
+        ctx.moveTo(x, y - s); ctx.lineTo(x + k, y - k); ctx.lineTo(x + s, y); ctx.lineTo(x + k, y + k);
+        ctx.lineTo(x, y + s); ctx.lineTo(x - k, y + k); ctx.lineTo(x - s, y); ctx.lineTo(x - k, y - k);
+        ctx.closePath();
+        ctx.fill();
     };
 
-    const tick = (t) => {
-        raf = 0;
-        if (document.hidden) return;
-        const dt = Math.min(0.05, (t - last) / 1000 || 0.016);
-        last = t;
-        ctx.clearRect(0, 0, w, h);
-        ctx.globalCompositeOperation = nightMode() ? 'lighter' : 'source-over';
+    /* ---------- particles shared by trail and bloom ---------- */
+    const parts = [];
+    const add = (p) => {
+        if (parts.length > 420) parts.splice(0, parts.length - 420);
+        parts.push(p);
+    };
+    const drawParts = (dt) => {
         for (let i = parts.length - 1; i >= 0; i--) {
             const p = parts[i];
             p.life += dt;
+            if (p.life < 0) continue;
             if (p.life >= p.ttl) { parts.splice(i, 1); continue; }
-            p.x += p.vx; p.y += p.vy;
-            p.vy += 0.005;
+            const damp = Math.pow(p.drag, dt);
+            const px = p.x, py = p.y;
+            p.x += p.vx * dt; p.y += p.vy * dt;
+            p.vx *= damp; p.vy = p.vy * damp + p.fall * dt;
             const k = 1 - p.life / p.ttl;
-            const a = k * 0.8 * (0.72 + 0.28 * Math.sin(p.life * 18 + p.phase));
-            ctx.globalAlpha = Math.max(0, a);
-            ctx.fillStyle = p.color;
-            if (p.star) {
-                const s = p.size * 2.2;
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y - s); ctx.lineTo(p.x + s * 0.28, p.y - s * 0.28);
-                ctx.lineTo(p.x + s, p.y); ctx.lineTo(p.x + s * 0.28, p.y + s * 0.28);
-                ctx.lineTo(p.x, p.y + s); ctx.lineTo(p.x - s * 0.28, p.y + s * 0.28);
-                ctx.lineTo(p.x - s, p.y); ctx.lineTo(p.x - s * 0.28, p.y - s * 0.28);
-                ctx.closePath(); ctx.fill();
-            } else {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, 6.2832);
-                ctx.fill();
+            const a = k * p.a * (p.tw ? 0.6 + 0.4 * Math.sin(p.life * p.tw + p.ph) : 1);
+            if (p.streak && (p.x !== px || p.y !== py)) {
+                ctx.strokeStyle = `rgba(${p.rgb},${(a * 0.55).toFixed(3)})`;
+                ctx.lineWidth = Math.max(0.5, p.r * 0.7);
+                ctx.beginPath(); ctx.moveTo(px - (p.x - px) * 2.5, py - (p.y - py) * 2.5); ctx.lineTo(p.x, p.y); ctx.stroke();
             }
+            const g = p.r * 8;
+            ctx.globalAlpha = a * p.glow;
+            ctx.drawImage(sprite(p.rgb), p.x - g / 2, p.y - g / 2, g, g);
+            ctx.globalAlpha = a;
+            ctx.fillStyle = `rgb(${p.rgb})`;
+            if (p.star) star4(p.x, p.y, p.r * 2.6);
+            else { ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 0.7, 0, 6.2832); ctx.fill(); }
+            ctx.globalAlpha = 1;
         }
-        ctx.globalAlpha = 1;
-        if (parts.length) raf = requestAnimationFrame(tick);
     };
 
-    addEventListener('pointermove', (e) => {
-        if (e.pointerType !== 'mouse') return;
-        if (lx >= 0) {
-            const dx = e.clientX - lx, dy = e.clientY - ly;
-            if (Math.abs(dx) + Math.abs(dy) > 3) spawnAlong(lx, ly, e.clientX, e.clientY);
+    /* ---------- bloom: flash, two rings, rays, a burst, then embers ---------- */
+    const blooms = [];
+    const bloom = (x, y, touch) => {
+        const still = calm();
+        const s = touch ? 0.8 : 1;
+        blooms.push({ x, y, life: 0, ttl: still ? 0.7 : 0.9, s, rot: Math.random() * 6.283, still });
+        if (blooms.length > 8) blooms.shift();
+        const n = still ? 10 : Math.round((22 + Math.random() * 8) * s);
+        for (let i = 0; i < n; i++) {
+            const ang = (i / n) * 6.2832 + (Math.random() - 0.5) * 0.4;
+            const sp = still ? 0 : (130 + Math.random() * 230) * s;
+            const r = still ? 4 + Math.random() * 26 : 0;
+            add({
+                x: x + Math.cos(ang) * r, y: y + Math.sin(ang) * r,
+                vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+                drag: 0.05, fall: still ? 0 : 26,
+                life: 0, ttl: still ? 0.5 + Math.random() * 0.4 : 0.8 + Math.random() * 0.9,
+                r: 0.7 + Math.random() * 1.5, star: Math.random() < 0.4, streak: !still,
+                rgb: pick(BLOOM), a: 0.95, glow: 0.8,
+                tw: still ? 0 : 7 + Math.random() * 8, ph: Math.random() * 6.283
+            });
         }
-        lx = e.clientX; ly = e.clientY;
+        if (!still) {
+            for (let i = 0; i < 9; i++) {
+                const ang = Math.random() * 6.2832, d = 16 + Math.random() * 46 * s;
+                add({
+                    x: x + Math.cos(ang) * d, y: y + Math.sin(ang) * d, vx: 0, vy: 6, drag: 1, fall: 0,
+                    life: -0.18 - Math.random() * 0.35, ttl: 0.7 + Math.random() * 0.8,
+                    r: 0.6 + Math.random() * 1.1, star: Math.random() < 0.5, streak: false,
+                    rgb: pick(BLOOM), a: 0.9, glow: 0.9, tw: 12 + Math.random() * 8, ph: Math.random() * 6.283
+                });
+            }
+        }
+        kick();
+    };
+    const drawBlooms = (dt) => {
+        for (let i = blooms.length - 1; i >= 0; i--) {
+            const b = blooms[i];
+            b.life += dt;
+            if (b.life >= b.ttl) { blooms.splice(i, 1); continue; }
+            const k = b.life / b.ttl;
+            const out = 1 - Math.pow(1 - k, 3);
+            /* flash */
+            const fz = (b.still ? 36 : 26 + 54 * out) * b.s;
+            ctx.globalAlpha = (1 - k) * (1 - k) * 0.85;
+            ctx.drawImage(sprite('255,240,205'), b.x - fz / 2, b.y - fz / 2, fz, fz);
+            ctx.globalAlpha = 1;
+            if (b.still) continue;
+            /* rings */
+            ctx.lineWidth = 1.1;
+            ctx.strokeStyle = `rgba(255,232,180,${(0.55 * (1 - k)).toFixed(3)})`;
+            ctx.beginPath(); ctx.arc(b.x, b.y, (6 + 58 * out) * b.s, 0, 6.2832); ctx.stroke();
+            const k2 = Math.max(0, (b.life - 0.08) / b.ttl);
+            if (k2 > 0) {
+                ctx.strokeStyle = `rgba(190,206,255,${(0.32 * (1 - k2)).toFixed(3)})`;
+                ctx.beginPath(); ctx.arc(b.x, b.y, (4 + 92 * (1 - Math.pow(1 - k2, 3))) * b.s, 0, 6.2832); ctx.stroke();
+            }
+            /* rays: a six-pointed bloom that opens and thins out */
+            ctx.lineWidth = 0.8;
+            for (let r = 0; r < 6; r++) {
+                const ang = b.rot + r * 1.0472;
+                const len = (12 + 30 * out) * b.s * (r % 2 ? 0.65 : 1);
+                const gx = Math.cos(ang), gy = Math.sin(ang);
+                const grd = ctx.createLinearGradient(b.x, b.y, b.x + gx * len, b.y + gy * len);
+                grd.addColorStop(0, `rgba(255,244,214,${(0.7 * (1 - k)).toFixed(3)})`);
+                grd.addColorStop(1, 'rgba(255,244,214,0)');
+                ctx.strokeStyle = grd;
+                ctx.beginPath(); ctx.moveTo(b.x + gx * 3, b.y + gy * 3); ctx.lineTo(b.x + gx * len, b.y + gy * len); ctx.stroke();
+            }
+        }
+    };
+
+    /* ---------- trail: faint and sparse ---------- */
+    const fine = matchMedia('(any-pointer: fine)').matches;
+    const pts = [];
+    let carry = 0, lastMove = -1e9;
+    const LIFE = 280;
+    const addPoint = (x, y, t) => {
+        const prev = pts[pts.length - 1];
+        if (prev && t - prev.t < 400) {
+            const dx = x - prev.x, dy = y - prev.y, d = Math.hypot(dx, dy);
+            if (d < 1.5) return;
+            const steps = Math.min(40, Math.ceil(d / 7));
+            for (let s = 1; s <= steps; s++) {
+                const u = s / steps;
+                pts.push({ x: prev.x + dx * u, y: prev.y + dy * u, t: prev.t + (t - prev.t) * u });
+            }
+            carry += d;
+            while (carry > 26) {
+                carry -= 26 + Math.random() * 14;
+                if (Math.random() < 0.35) continue;
+                const u = Math.random(), still = calm();
+                const back = 6 + Math.random() * 10;
+                add({
+                    x: prev.x + dx * u + (Math.random() - 0.5) * 8, y: prev.y + dy * u + (Math.random() - 0.5) * 8,
+                    vx: still ? 0 : (-dx / d) * back + (Math.random() - 0.5) * 14,
+                    vy: still ? 0 : (-dy / d) * back + (Math.random() - 0.5) * 14 + 3,
+                    drag: 0.15, fall: 0,
+                    life: 0, ttl: still ? 0.45 + Math.random() * 0.3 : 0.7 + Math.random() * 0.8,
+                    r: 0.5 + Math.random() * 0.9, star: Math.random() < 0.22, streak: false,
+                    rgb: pick(TRAIL), a: 0.72, glow: 0.55, tw: still ? 0 : 7 + Math.random() * 7, ph: Math.random() * 6.283
+                });
+            }
+        } else {
+            pts.length = 0;
+            pts.push({ x, y, t });
+        }
+        if (pts.length > 160) pts.splice(0, pts.length - 160);
+    };
+    const drawTrail = (now) => {
+        while (pts.length && now - pts[0].t > LIFE) pts.shift();
+        const n = pts.length;
+        if (n < 2) return;
+        for (let i = 1; i < n; i++) {
+            const a = pts[i - 1], b = pts[i];
+            const k = Math.max(0, 1 - (now - b.t) / LIFE);
+            if (k <= 0) continue;
+            ctx.strokeStyle = `rgba(236,230,255,${(0.42 * k * k).toFixed(3)})`;
+            ctx.lineWidth = 0.4 + 1 * k;
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+        const head = pts[n - 1];
+        const hk = Math.max(0, 1 - (now - lastMove) / 200);
+        if (hk > 0) {
+            ctx.globalAlpha = 0.18 * hk;
+            ctx.drawImage(sprite('255,238,200'), head.x - 9, head.y - 9, 18, 18);
+            ctx.globalAlpha = 1;
+        }
+    };
+
+    /* ---------- loop ---------- */
+    let raf = 0, last = 0;
+    const tick = (t) => {
+        raf = 0;
+        const dt = Math.min(0.05, (t - last) / 1000 || 0.016);
+        last = t;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+        drawTrail(t);
+        drawBlooms(dt);
+        drawParts(dt);
+        ctx.globalCompositeOperation = 'source-over';
+        if (pts.length > 1 || parts.length || blooms.length) raf = requestAnimationFrame(tick);
+    };
+    function kick() {
         if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
+    }
+
+    if (fine) {
+        addEventListener('pointermove', (e) => {
+            if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+            const list = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+            for (const ev of (list.length ? list : [e])) addPoint(ev.clientX, ev.clientY, ev.timeStamp || performance.now());
+            lastMove = performance.now();
+            kick();
+        }, { passive: true });
+    }
+    addEventListener('pointerdown', (e) => {
+        if (e.button !== 0 || !e.isPrimary) return;
+        bloom(e.clientX, e.clientY, e.pointerType === 'touch');
     }, { passive: true });
 
     document.addEventListener('visibilitychange', () => {
-        if (!document.hidden && parts.length && !raf) {
-            last = performance.now();
-            raf = requestAnimationFrame(tick);
-        }
+        if (document.hidden) { pts.length = 0; parts.length = 0; blooms.length = 0; }
     });
+})();
+</script>
+
+{{- /* Reading comet: on articles, a thin gold line along the top edge with a glowing head
+     that travels as you read. Scroll-linked feedback, so it stays on in calm mode too. */ -}}
+<script>
+(() => {
+    if (!document.querySelector('.post-single')) return;
+    const bar = document.createElement('div');
+    bar.className = 'read-comet';
+    bar.setAttribute('aria-hidden', 'true');
+    bar.innerHTML = '<span class="read-comet-tail"></span><span class="read-comet-head"></span>';
+    document.body.appendChild(bar);
+    const tail = bar.firstChild, head = bar.lastChild;
+    let ticking = false;
+    const update = () => {
+        ticking = false;
+        const max = document.documentElement.scrollHeight - innerHeight;
+        const k = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+        tail.style.transform = `scaleX(${k.toFixed(4)})`;
+        head.style.transform = `translateX(${(k * innerWidth).toFixed(1)}px)`;
+        bar.classList.toggle('is-on', k > 0.002);
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    update();
 })();
 </script>
 

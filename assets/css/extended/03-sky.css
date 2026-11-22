@@ -1,6 +1,7 @@
 /* ==========================================================================
    Sky — fixed starfield, nebulae, meteors
-   Pure CSS, zero assets. Visible in night mode only; dawn keeps a clear sky.
+   The CSS layers are the no-JS sky. With JS, two canvases inside .sky take
+   over the stars and meteors (see nightsky-lib.html / extend_footer.html).
    ========================================================================== */
 
 .sky {
@@ -351,28 +352,109 @@
     }
 }
 
-/* --- cursor stardust canvas (JS-driven, pointer:fine only) ---------------- */
+/* --- effects canvas: star trail + click bloom (JS) -------------------------
+   Above the splash (150) so both also show on the lawn scene. */
 
 .stardust {
     position: fixed;
     inset: 0;
-    z-index: 80;
+    z-index: 160;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
 }
 
+/* --- canvas sky (JS): replaces the CSS stars and meteors when it runs ------ */
+
+.sky-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.sky-canvas {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.sky-still {
+    will-change: transform;
+}
+
+/* with JS the canvases own the stars and meteors from the first paint */
+html.js-motion .sky-stars,
+html.js-motion .meteor {
+    display: none;
+}
+
+html.sky-live .sky-canvas {
+    opacity: 1;
+}
+
+html.calm .meteor {
+    display: none;
+}
+
+html.calm .sky-stars {
+    animation: none;
+    opacity: 0.85;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .meteor {
+    html:not(.js-motion) .meteor {
         display: none;
     }
 
-    .sky-stars {
+    html:not(.js-motion) .sky-stars {
         animation: none;
         opacity: 0.85;
     }
 }
 
+/* --- reading comet: progress along the top edge of an article -------------- */
+
+.read-comet {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 120;
+    height: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.read-comet.is-on {
+    opacity: 1;
+}
+
+.read-comet-tail {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(217, 178, 106, 0) 0%, rgba(217, 178, 106, 0.35) 55%, rgba(255, 232, 180, 0.95) 100%);
+    transform: scaleX(0);
+    transform-origin: left center;
+}
+
+.read-comet-head {
+    position: absolute;
+    top: -3px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff4d6;
+    box-shadow: 0 0 10px 3px rgba(255, 220, 150, 0.65);
+}
+
 @media print {
-    .sky {
+    .sky,
+    .read-comet {
         display: none !important;
     }
 }

@@ -1,42 +1,44 @@
 /* ==========================================================================
    「星野手帖」— design tokens
-   Night sky + dawn. No external fonts or assets.
-   Dark = 夜空 (deep indigo, starlight gold accent, one cinnabar seal).
-   Light = 黎明 (cool silver-blue dawn, stars hidden).
+   Night only (no light theme). No external fonts or assets.
+   夜空：deep indigo paper, starlight gold accent, one cinnabar seal.
    ========================================================================== */
 
-:root {
-    /* palette — dawn (light) */
-    --paper: #edf0f6;
-    --paper-2: #f6f8fb;
-    --paper-3: #e2e6ef;
-    --ink: #161c2e;
-    --text: #2b3247;
-    --text-soft: #4d5570;
-    --muted: #5f6880;
-    --faint: #858da3;
-    --rule: #d4d9e5;
-    --rule-strong: #b3bacb;
-    --accent: #7d5f28;
-    --accent-strong: #6d5324;
-    --accent-soft: #e3d9c2;
-    --seal: #a63d2f;
-    --tag-bg: #e6eaf2;
-    --quote-bg: #e9edf4;
-    --code-block: #0b0f1f;
-    --code-block-rule: #232a45;
+/* :root[data-theme] matches PaperMod's own dark block (core/theme-vars.css) at equal
+   specificity, so these later declarations win and its grey palette never shows. */
+:root,
+:root[data-theme="dark"] {
+    /* palette — night only */
+    --paper: #0a0e1c;
+    --paper-2: #10152a;
+    --paper-3: #161c36;
+    --ink: #ece9e2;
+    --text: #c7ccda;
+    --text-soft: #a7aec2;
+    --muted: #8b93a9;
+    --faint: #6b7389;
+    --rule: #232a45;
+    --rule-strong: #3a4364;
+    --accent: #d9b26a;
+    --accent-strong: #e5c583;
+    --accent-soft: #332f1e;
+    --seal: #c8503c;
+    --tag-bg: #141a32;
+    --quote-bg: #10152a;
+    --code-block: #070a14;
+    --code-block-rule: #1d2440;
     --code-block-text: #d5dae8;
 
-    /* sky — dawn remnant stars, visible on pale sky */
-    --s1: rgba(64, 74, 120, 0.6);
-    --s2: rgba(64, 74, 120, 0.42);
-    --s3: rgba(80, 100, 160, 0.5);
-    --s4: rgba(176, 132, 64, 0.55);
-    --s5: rgba(146, 104, 38, 0.65);
-    --neb1: rgba(238, 180, 130, 0.25);
-    --neb2: rgba(150, 170, 230, 0.28);
-    --meteor-grad: linear-gradient(90deg, rgba(50, 60, 100, 0.85), rgba(50, 60, 100, 0.3) 55%, transparent);
-    --meteor-head: rgba(50, 60, 100, 0.9);
+    /* sky */
+    --s1: rgba(235, 240, 255, 0.9);
+    --s2: rgba(235, 240, 255, 0.65);
+    --s3: rgba(210, 224, 255, 0.8);
+    --s4: rgba(255, 244, 214, 0.85);
+    --s5: rgba(217, 178, 106, 0.9);
+    --neb1: rgba(88, 116, 200, 0.15);
+    --neb2: rgba(146, 96, 190, 0.1);
+    --meteor-grad: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 55%, transparent);
+    --meteor-head: rgba(255, 255, 255, 0.95);
 
     /* theme-variable bridge: keep PaperMod components on the same palette */
     --theme: var(--paper);
@@ -63,96 +65,8 @@
     --codebar: 2.25rem;
     --ease: cubic-bezier(0.2, 0.6, 0.3, 1);
 
-    color-scheme: light;
-}
-
-:root[data-theme="dark"] {
-    --paper: #0a0e1c;
-    --paper-2: #10152a;
-    --paper-3: #161c36;
-    --ink: #ece9e2;
-    --text: #c7ccda;
-    --text-soft: #a7aec2;
-    --muted: #8b93a9;
-    --faint: #6b7389;
-    --rule: #232a45;
-    --rule-strong: #3a4364;
-    --accent: #d9b26a;
-    --accent-strong: #e5c583;
-    --accent-soft: #332f1e;
-    --seal: #c8503c;
-    --tag-bg: #141a32;
-    --quote-bg: #10152a;
-    --code-block: #070a14;
-    --code-block-rule: #1d2440;
-    --code-block-text: #d5dae8;
-
-    /* sky — night stars */
-    --s1: rgba(235, 240, 255, 0.9);
-    --s2: rgba(235, 240, 255, 0.65);
-    --s3: rgba(210, 224, 255, 0.8);
-    --s4: rgba(255, 244, 214, 0.85);
-    --s5: rgba(217, 178, 106, 0.9);
-    --neb1: rgba(88, 116, 200, 0.15);
-    --neb2: rgba(146, 96, 190, 0.1);
-    --meteor-grad: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 55%, transparent);
-    --meteor-head: rgba(255, 255, 255, 0.95);
-
-    --theme: var(--paper);
-    --entry: var(--paper-2);
-    --primary: var(--ink);
-    --secondary: var(--muted);
-    --tertiary: var(--rule);
-    --content: var(--text);
-    --code-bg: var(--tag-bg);
-    --code-block-bg: var(--code-block);
-    --border: var(--rule);
-
     color-scheme: dark;
-}
-
-/* No-JS auto mode. JS resolves data-theme to light/dark before paint. */
-@media (prefers-color-scheme: dark) {
-    :root[data-theme="auto"] {
-        --paper: #0a0e1c;
-        --paper-2: #10152a;
-        --paper-3: #161c36;
-        --ink: #ece9e2;
-        --text: #c7ccda;
-        --text-soft: #a7aec2;
-        --muted: #8b93a9;
-        --faint: #6b7389;
-        --rule: #232a45;
-        --rule-strong: #3a4364;
-        --accent: #d9b26a;
-        --accent-strong: #e5c583;
-        --accent-soft: #332f1e;
-        --seal: #c8503c;
-        --tag-bg: #141a32;
-        --quote-bg: #10152a;
-        --code-block: #070a14;
-        --code-block-rule: #1d2440;
-        --code-block-text: #d5dae8;
-        --s1: rgba(235, 240, 255, 0.9);
-        --s2: rgba(235, 240, 255, 0.65);
-        --s3: rgba(210, 224, 255, 0.8);
-        --s4: rgba(255, 244, 214, 0.85);
-        --s5: rgba(217, 178, 106, 0.9);
-        --neb1: rgba(88, 116, 200, 0.15);
-        --neb2: rgba(146, 96, 190, 0.1);
-        --meteor-grad: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 55%, transparent);
-        --meteor-head: rgba(255, 255, 255, 0.95);
-        --theme: var(--paper);
-        --entry: var(--paper-2);
-        --primary: var(--ink);
-        --secondary: var(--muted);
-        --tertiary: var(--rule);
-        --content: var(--text);
-        --code-bg: var(--tag-bg);
-        --code-block-bg: var(--code-block);
-        --border: var(--rule);
-        color-scheme: dark;
-    }
+    scrollbar-color: #2c3456 transparent;
 }
 
 html {
@@ -224,14 +138,29 @@ svg {
     transform: translateY(0);
 }
 
+/* Motion: <html>.calm is set before first paint (extend_head) from the visitor's
+   choice in the header switch, falling back to prefers-reduced-motion.
+   Without JS (no .js-motion) the media query alone decides. */
+html.calm {
+    scroll-behavior: auto;
+}
+
+html.calm *,
+html.calm *::before,
+html.calm *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    html {
+    html:not(.js-motion) {
         scroll-behavior: auto;
     }
 
-    *,
-    *::before,
-    *::after {
+    html:not(.js-motion) *,
+    html:not(.js-motion) *::before,
+    html:not(.js-motion) *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;

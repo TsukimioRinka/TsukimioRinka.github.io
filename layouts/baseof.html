@@ -32,8 +32,12 @@
         <div class="meteor meteor-b"></div>
         <div class="meteor meteor-c"></div>
     </div>
+    {{ partial "nightsky.html" . }}
+    {{- if .IsHome }}
+    {{ partial "splash.html" . }}
+    {{- end }}
     {{ partialCached "header.html" . .Page -}}
-    <main class="main" id="main">
+    <main class="main{{ if .IsHome }} main--home{{ end }}" id="main">
         {{- block "main" . }}{{ end }}
     </main>
     {{ partialCached "footer.html" . .Layout .Kind (.Param "hideFooter") (.Param "ShowCodeCopyButtons") -}}

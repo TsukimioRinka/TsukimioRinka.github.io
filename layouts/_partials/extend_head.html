@@ -1,3 +1,36 @@
-{{- /* Design tokens are intentionally in plain CSS (assets/css/extended); this only sets browser chrome colors. */ -}}
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#edf0f6">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0e1c">
+{{- /* Browser chrome color comes from hugo.yaml (params.assets.theme_color). */ -}}
+{{- /* Motion gate, before first paint. The header switch stores the visitor's choice
+     (localStorage body:motion = on | off); without a choice the system's
+     prefers-reduced-motion decides. <html>.calm = hold still. Scripts read
+     window.bodyMotion.calm() and listen for the "motionchange" event. */}}
+<script>
+(() => {
+    const root = document.documentElement;
+    const q = matchMedia('(prefers-reduced-motion: reduce)');
+    const read = () => { try { return localStorage.getItem('body:motion'); } catch (e) { return null; } };
+    const apply = () => {
+        const pref = read();
+        root.classList.toggle('calm', pref === 'off' || (pref !== 'on' && q.matches));
+    };
+    root.classList.add('js-motion');
+    apply();
+    const changed = () => { apply(); dispatchEvent(new CustomEvent('motionchange')); };
+    if (q.addEventListener) q.addEventListener('change', () => { if (!read()) changed(); });
+    window.bodyMotion = {
+        calm: () => root.classList.contains('calm'),
+        set: (on) => { try { localStorage.setItem('body:motion', on ? 'on' : 'off'); } catch (e) { /* ignore */ } changed(); }
+    };
+})();
+</script>
+{{- if .IsHome }}
+{{- /* Splash gate: decided before first paint so the lawn scene covers the page
+     instead of flashing in after it. Once per tab session, never on /page/N/,
+     never without JS (the page then simply starts at the star sea). */}}
+<script>
+(() => {
+    if (/\/page\/\d+\/?$/.test(location.pathname) || location.hash) return;
+    try { if (sessionStorage.getItem('body:splash') === 'seen') return; } catch (e) { /* storage blocked: show it */ }
+    document.documentElement.classList.add('splash-open');
+})();
+</script>
+{{- end }}
